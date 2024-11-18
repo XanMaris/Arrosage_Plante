@@ -10,9 +10,7 @@ const HEADER_HEIGHT = 250;
 type Props = PropsWithChildren<{
 }>;
 
-export default function ParallaxScrollView({
-  children,
-}: Props) {
+export default function ParallaxScrollView({ children }: Props) {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const bottom = useBottomTabOverflow();
 
