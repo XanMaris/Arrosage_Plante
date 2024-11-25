@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: arrosageplante
+  liquibase:
+    enabled: false # TODO: enable when set up database
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: user
+    password: test
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database: h2
+    defer-datasource-initialization: true # By default, the data.sql script executes before Hibernate initialization
+
+server:
+  port: 8080
+  servlet:
+    context-path: '/api'
