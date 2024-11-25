@@ -4,6 +4,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { Button, StyleSheet, Switch, Linking } from "react-native";
 import {Stack, useLocalSearchParams} from "expo-router";
 import SliderComponent from "@/app/plant/Slider";
+import { useNavigation } from '@react-navigation/native';
 
 export default function PlantDetail() {
     const [plante, setPlante] = useState<any>(null);
@@ -59,7 +60,7 @@ export default function PlantDetail() {
             return;
         }
 
-        const url = `http://localhost:8080/plant/${id}`;
+        const url = `http://localhost:8080/api/plant/${id}`;
 
         fetch(url, {
             method: 'DELETE',
@@ -71,7 +72,9 @@ export default function PlantDetail() {
                 if (!response.ok) {
                     throw new Error("Erreur lors de la suppression de la plante");
                 }
-                alert(`Plante avec ID ${id} supprimée avec succès.`);
+                alert(`${plante.name} supprimée avec succès.`);
+                // @ts-ignore
+                window.location.href = "/";
             })
             .catch((error) => {
                 alert("Erreur lors de la suppression de la plante");
