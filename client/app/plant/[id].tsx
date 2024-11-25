@@ -3,8 +3,6 @@ import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { Button, StyleSheet, Switch, Linking } from "react-native";
 import {Stack, useLocalSearchParams} from "expo-router";
-import SliderComponent from "@/app/plant/Slider";
-import { useNavigation } from '@react-navigation/native';
 
 export default function PlantDetail() {
     const [plante, setPlante] = useState<any>(null);
