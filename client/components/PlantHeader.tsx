@@ -9,7 +9,6 @@ import {Link} from "expo-router";
 type PlantProps = {
     id: string,
     name: string,
-    humidityRate: number,
     imageUrl: string
 }
 
@@ -24,19 +23,14 @@ export function PlantHeader({
                                 darkColor,
                                 id,
                                 name,
-                                humidityRate,
                                 imageUrl,
                                 ...otherProps
                             }: ThemedViewProps) {
     const backgroundColor = useThemeColor({light: lightColor, dark: darkColor}, 'background');
 
-    const humidityRateColor = humidityRate > 60 ? "red" : "white";
 
     return (
         <View style={[{backgroundColor}, style, styles.container]} {...otherProps}>
-            <ThemedText style={styles.humidityRate} type="defaultSemiBold">
-                Taux d'humidité: <span color={humidityRateColor}>{humidityRate}%</span>
-            </ThemedText>
             <img src={imageUrl} alt={name}/>
 
             <div style={styles.bottomAction}>

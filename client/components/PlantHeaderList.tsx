@@ -40,7 +40,6 @@ export function PlantHeaderList() {
         <PlantHeader
             id={item.id}
             name={item.name}
-            humidityRate={item.humidityRate}
             imageUrl={item.imageUrl}
             style={styles.headerImage}
 
