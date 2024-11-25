@@ -28,14 +28,54 @@ export default function PlantDetail() {
             .catch(error => console.error("Erreur lors de la récupération des données de la plante", error));
     }
 
-    function arroserPlante()
-    {
-        
+    function arroserPlante() {
+
+        const url = `http://localhost:8080/api/plant/${id}/arroser`;
+        const data = {
+            waterByDayPurcentage: plante.waterByDayPurcentage,
+            automaticWatering: plante.automaticWatering,
+        };
+        // Effectuer la requête POST
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                alert('la plante a été arrosé');
+            })
+            .catch((error) => {
+                alert('Erreur lors de l\'arrosage de la plante :');
+            });
     }
     const handleChange = () => { };
 
     function deletePlante() {
-        console.log(useLocalSearchParams().toString());
+        if (!id) {
+            console.log("ID de la plante introuvable.");
+            return;
+        }
+
+        const url = `http://localhost:8080/plant/${id}`;
+
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Erreur lors de la suppression de la plante");
+                }
+                alert(`Plante avec ID ${id} supprimée avec succès.`);
+            })
+            .catch((error) => {
+                alert("Erreur lors de la suppression de la plante");
+            });
     }
 
     if (!plante) {
@@ -53,7 +93,7 @@ export default function PlantDetail() {
                 <div style={styles.header}>
                     <img
                         style={styles.headerImage}
-                        src={plante.imageUrl || "https://fastly.picsum.photos/id/305/4928/3264.jpg?hmac=s2FLjeAIyYH0CZl3xuyOShFAtL8yEGiYk31URLDxQCI"}
+                        src={plante.urlImage || "https://fastly.picsum.photos/id/305/4928/3264.jpg?hmac=s2FLjeAIyYH0CZl3xuyOShFAtL8yEGiYk31URLDxQCI"}
                         alt="Image d'illustration de la plante"
                     />
                     <SliderComponent humidityRate={plante.humidityRate} />

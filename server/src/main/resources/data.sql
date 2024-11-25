@@ -1,1 +1,1 @@
-INSERT INTO PLANT (ID, NAME, DESCRIPTION, HUMIDITY_RATE, AUTOMATIC_WATERING,WATER_BY_DAY_PURCENTAGE) VALUES (1, 'Ma plante', 'Description', 60, 1,40);
+INSERT INTO PLANT (ID, NAME, DESCRIPTION, HUMIDITY_RATE, AUTOMATIC_WATERING,WATER_BY_DAY_PURCENTAGE,URL_IMAGE) VALUES (1, 'Ma plante', 'Description', 60, 1,40,'https://img.lovepik.com/free-png/20210919/lovepik-potted-plant-of-bambusa-multiplex-png-image_400883334_wh1200.png');

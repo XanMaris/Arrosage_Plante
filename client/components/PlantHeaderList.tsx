@@ -1,48 +1,34 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Animated, StyleSheet, useWindowDimensions } from "react-native";
 import { PlantHeader } from "@/components/PlantHeader";
+import {number} from "prop-types";
 
 const FlatList = Animated.FlatList;
 
-// TODO: Remplacer par les données du serveur
-const data = [
-    {
-        id: "1",
-        name: "Plante 1",
-        humidityRate: 50,
-        imageUrl: "https://fastly.picsum.photos/id/305/4928/3264.jpg?hmac=s2FLjeAIyYH0CZl3xuyOShFAtL8yEGiYk31URLDxQCI",
-    },
-    {
-        id: "2",
-        name: "Plante 2",
-        humidityRate: 60,
-        imageUrl: "https://fastly.picsum.photos/id/305/4928/3264.jpg?hmac=s2FLjeAIyYH0CZl3xuyOShFAtL8yEGiYk31URLDxQCI",
-    },
-    {
-        id: "3",
-        name: "Plante 3",
-        humidityRate: 70,
-        imageUrl: "https://fastly.picsum.photos/id/305/4928/3264.jpg?hmac=s2FLjeAIyYH0CZl3xuyOShFAtL8yEGiYk31URLDxQCI",
-    },
-    {
-        id: "4",
-        name: "Plante 4",
-        humidityRate: 80,
-        imageUrl: "https://fastly.picsum.photos/id/305/4928/3264.jpg?hmac=s2FLjeAIyYH0CZl3xuyOShFAtL8yEGiYk31URLDxQCI",
-    },
-];
-
 export function PlantHeaderList() {
+    const [data, setData] = useState([]);
     const { width } = useWindowDimensions();
     const numColumns = width < 768 ? 1 : 3;
 
-    const renderItem = ({ item }: { item: typeof data[0] }) => (
+    type plant = {
+        id: string,
+        name : string,
+        urlImage : string,
+    }
+
+    useEffect(() => {
+        fetch('http://localhost:8080/api/plant')
+            .then((response) => response.json())
+            .then((data) => setData(data))
+            .catch((error) => console.error("Erreur lors de la récupération des plantes", error));
+    }, []);
+
+    const renderItem = ({ item }: { item:  plant }) =>  (
         <PlantHeader
             id={item.id}
             name={item.name}
-            imageUrl={item.imageUrl}
+            urlImage={item.urlImage}
             style={styles.headerImage}
-
         />
     );
 
@@ -68,6 +54,6 @@ const styles = StyleSheet.create({
     },
     headerImage: {
         flex: 1,
-        margin: 4
+        margin: 4,
     },
 });

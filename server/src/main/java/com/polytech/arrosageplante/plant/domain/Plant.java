@@ -16,16 +16,23 @@ public final class Plant {
 
     private double waterByDayPurcentage;
 
-    public Plant(String name, String description, double humidityRate, boolean automaticWatering, double waterByDayPurcentage) {
+    private String urlImage;
+
+    public Plant(String name, String description, double humidityRate, boolean automaticWatering, double waterByDayPurcentage, String urlImage) {
         this.name = name;
         this.description = description;
         this.humidityRate = humidityRate;
         this.automaticWatering = automaticWatering;
         this.waterByDayPurcentage = waterByDayPurcentage;
+        this.urlImage = urlImage;
     }
 
     protected Plant() {
 
+    }
+
+    public String getUrlImage() {
+        return urlImage;
     }
 
     public Long getId() {
@@ -59,6 +66,7 @@ public final class Plant {
                 Objects.equals(this.description, that.description) &&
                 Double.doubleToLongBits(this.humidityRate) == Double.doubleToLongBits(that.humidityRate) &&
                 Double.doubleToLongBits(this.waterByDayPurcentage) == Double.doubleToLongBits(that.waterByDayPurcentage) &&
+                Objects.equals(this.urlImage, that.urlImage) &&
                 this.automaticWatering == that.automaticWatering;
     }
 
@@ -74,7 +82,8 @@ public final class Plant {
                 "description=" + description + ", " +
                 "humidityRate=" + humidityRate + ", " +
                 "automaticWatering=" + automaticWatering +
-                "waterByDayPurcentage=" + waterByDayPurcentage + ']';
+                "waterByDayPurcentage=" + waterByDayPurcentage +
+                "urlImage=" + urlImage + "]";
     }
 
 }
