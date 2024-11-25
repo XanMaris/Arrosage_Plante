@@ -9,7 +9,6 @@ import {Link} from "expo-router";
 type PlantProps = {
     id: string,
     name: string,
-    urlImage: string
 }
 
 export type ThemedViewProps = ViewProps & {
@@ -23,11 +22,10 @@ export function PlantHeader({
                                 darkColor,
                                 id,
                                 name,
-                                urlImage,
                                 ...otherProps
                             }: ThemedViewProps) {
     const backgroundColor = useThemeColor({light: lightColor, dark: darkColor}, 'background');
-
+    const urlImage = `http://localhost:8080/api/plant/${id}/image`;
 
     return (
         <View style={[{backgroundColor}, style, styles.container]} {...otherProps}>

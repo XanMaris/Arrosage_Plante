@@ -1,41 +1,57 @@
 package com.polytech.arrosageplante.plant.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 @Entity
 public final class Plant {
     @Id
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
     private String name;
     private String description;
-    private double humidityRate;
     private boolean automaticWatering;
+    /**
+     * <a href="https://fr.wikipedia.org/wiki/Capacit%C3%A9_au_champ">Coefficient de rétention d'eau du sol</a>
+     */
+    private double waterRetentionCoefficient;
 
-    private double waterByDayPurcentage;
+    private double waterByDayPercentage;
 
-    private String urlImage;
+    @Lob
+    private byte[] image;
+    private String imageContentType;
 
-    public Plant(String name, String description, double humidityRate, boolean automaticWatering, double waterByDayPurcentage, String urlImage) {
+    public Plant(String name,
+                 String description,
+                 boolean automaticWatering,
+                 double waterByDayPercentage,
+                 byte[] image,
+                 double waterRetentionCoefficient, String imageContentType) {
         this.name = name;
         this.description = description;
-        this.humidityRate = humidityRate;
         this.automaticWatering = automaticWatering;
-        this.waterByDayPurcentage = waterByDayPurcentage;
-        this.urlImage = urlImage;
+        this.waterRetentionCoefficient = waterRetentionCoefficient;
+        this.waterByDayPercentage = waterByDayPercentage;
+        this.image = image;
+        this.imageContentType = imageContentType;
     }
 
     protected Plant() {
 
     }
 
-    public String getUrlImage() {
-        return urlImage;
+    public byte[] getImage() {
+        return this.image;
     }
 
-    public Long getId() {
+    public String getImageContentType() {
+        return this.imageContentType;
+    }
+
+    public String getId() {
         return id;
     }
 
@@ -47,15 +63,16 @@ public final class Plant {
         return description;
     }
 
-    public double getHumidityRate() {
-        return humidityRate;
-    }
 
     public boolean getAutomaticWatering() {
         return automaticWatering;
     }
 
-    public double getWaterByDayPurcentage() { return waterByDayPurcentage;}
+    public double getWaterRetentionCoefficient() {
+        return this.waterRetentionCoefficient;
+    }
+
+    public double getWaterByDayPercentage() { return waterByDayPercentage;}
 
     @Override
     public boolean equals(Object obj) {
@@ -64,15 +81,23 @@ public final class Plant {
         var that = (Plant) obj;
         return Objects.equals(this.name, that.name) &&
                 Objects.equals(this.description, that.description) &&
-                Double.doubleToLongBits(this.humidityRate) == Double.doubleToLongBits(that.humidityRate) &&
-                Double.doubleToLongBits(this.waterByDayPurcentage) == Double.doubleToLongBits(that.waterByDayPurcentage) &&
-                Objects.equals(this.urlImage, that.urlImage) &&
+                Double.doubleToLongBits(this.waterByDayPercentage) == Double.doubleToLongBits(that.waterByDayPercentage) &&
+                Double.doubleToLongBits(this.waterRetentionCoefficient) == Double.doubleToLongBits(that.waterRetentionCoefficient) &&
+                Arrays.equals(this.image, that.image) &&
+                Objects.equals(this.imageContentType, that.imageContentType) &&
                 this.automaticWatering == that.automaticWatering;
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, humidityRate, automaticWatering);
+        return Objects.hash(name,
+                description,
+                automaticWatering,
+                waterRetentionCoefficient,
+                waterByDayPercentage,
+                this.imageContentType,
+                Arrays.hashCode(image));
     }
 
     @Override
@@ -80,10 +105,9 @@ public final class Plant {
         return "Plant[" +
                 "name=" + name + ", " +
                 "description=" + description + ", " +
-                "humidityRate=" + humidityRate + ", " +
                 "automaticWatering=" + automaticWatering +
-                "waterByDayPurcentage=" + waterByDayPurcentage +
-                "urlImage=" + urlImage + "]";
+                "waterByDayPurcentage=" + waterByDayPercentage +
+                "waterRetentionCoefficient=" + waterRetentionCoefficient + "]";
     }
 
 }

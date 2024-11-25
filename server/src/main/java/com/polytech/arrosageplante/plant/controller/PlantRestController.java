@@ -1,53 +1,91 @@
 package com.polytech.arrosageplante.plant.controller;
 
+import com.polytech.arrosageplante.esp32.communication.websocket.output.WebSocketPublisherService;
 import com.polytech.arrosageplante.exception.EntityNotFound;
 import com.polytech.arrosageplante.plant.domain.Plant;
-import com.polytech.arrosageplante.plant.repository.PlantRepository;
-import org.springframework.http.ResponseEntity;
+import com.polytech.arrosageplante.plant.measure.domain.PlantMeasure;
+import com.polytech.arrosageplante.plant.measure.service.PlantMeasureService;
+import com.polytech.arrosageplante.plant.service.PlantAddDTO;
+import com.polytech.arrosageplante.plant.service.PlantCrudService;import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
+
 @RequestMapping("/plant")
 @RestController
 public class PlantRestController {
-    private final PlantRepository plantRepository;
+    private final PlantCrudService plantCrudService;
+    private final PlantMeasureService plantMeasureService;
+    private final WebSocketPublisherService webSocketPublisherService;
 
-
-    public PlantRestController(PlantRepository plantRepository) {
-        this.plantRepository = plantRepository;
+    public PlantRestController(PlantCrudService plantCrudService,
+                               PlantMeasureService plantMeasureService,
+                               WebSocketPublisherService webSocketPublisherService) {
+        this.plantCrudService = plantCrudService;
+        this.plantMeasureService = plantMeasureService;
+        this.webSocketPublisherService = webSocketPublisherService;
     }
 
+    @PostMapping(value = "", consumes = "multipart/form-data")
+    public Plant addPlant(@ModelAttribute PlantAddDTO plantAddDTO) throws IOException {
+        return this.plantCrudService.addPlant(plantAddDTO);
+    }
 
     @GetMapping("/")
     public List<Plant> getPlants() {
-        return this.plantRepository.findAll();
+        return this.plantCrudService.getPlants();
     }
 
     @GetMapping("/{id}")
-    public Plant getPlant(@PathVariable Long id) {
-        Optional<Plant> plant = this.plantRepository.findById(id);
-
-        if (plant.isEmpty()) {
-            throw new EntityNotFound();
-        }
-
-        // TODO: faire une requête HTTP vers l'ESP-32 pour récupérer les détails des capteurs associées à la plante
-
-        return plant.get();
+    public PlantDetailDto getPlant(@PathVariable String id) {
+        Plant plant = this.plantCrudService.getPlant(id);
+        PlantMeasure plantMeasureMostRecentMeasure = this.plantMeasureService.getMostRecentMeasure(plant);
+        return PlantDetailDto.fromPlant(plant, plantMeasureMostRecentMeasure.getAirHumidity());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePlant(@PathVariable Long id) {
-        Optional<Plant> plant = this.plantRepository.findById(id);
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getPlantImage(@PathVariable String id) {
+        Plant plant = this.plantCrudService.getPlant(id);
+        byte[] image = plant.getImage();
+        String imageContentType = plant.getImageContentType();
 
-        if (plant.isEmpty()) {
-            throw new EntityNotFound();
+        if (image == null || imageContentType == null) {
+            return ResponseEntity.notFound().build();
         }
 
-        this.plantRepository.deleteById(id);
+        // Détecter le type MIME si nécessaire (optionnel)
+        MediaType mediaType;
+        try {
+            mediaType = MediaType.parseMediaType(imageContentType);
+        } catch (IllegalArgumentException e) {
+            // Si le type MIME est invalide, utiliser un type par défaut ou renvoyer une erreur
+            mediaType = MediaType.APPLICATION_OCTET_STREAM;
+        }
 
-        // TODO: Faire une requête HTTP vers l'ESP-32 pour effectuer des actions supplémentaires, comme éteindre un système d'irrigation ou autre
+        return ResponseEntity.ok()
+                .contentType(mediaType)
+                .body(image);
+    }
+
+
+    @PostMapping(value = "{id}/water")
+    public void waterPlant(@PathVariable String id) {
+        Plant plant = this.plantCrudService.getPlant(id);
+
+        this.webSocketPublisherService.arroser(plant);
+    }
+
+    @GetMapping(value = "{id}/measures/day")
+    public List<PlantMeasure> plantMeasures(@PathVariable String id) {
+        Plant plant = this.plantCrudService.getPlant(id);
+        return this.plantMeasureService.getDailyMeasures(plant);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deletePlant(@PathVariable String id) {
+        this.plantCrudService.deletePlant(id);
 
         return ResponseEntity.noContent().build(); // Renvoie un statut HTTP 204 (No Content) si la suppression a réussi
     }

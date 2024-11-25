@@ -20,14 +20,10 @@ export const fetchPlant = () => API.get('/plant/');
 export const infoPlant = (id) => API.get(`/plant/${id}`);
 
 export const arroserPlante = (id, plante) => {
-    const url = `/plant/${id}/arroser`;
-    const data = {
-        waterByDayPurcentage: plante.waterByDayPurcentage,
-        automaticWatering: plante.automaticWatering,
-    };
+    const url = `/plant/${id}/water`;
 
     // Utilisation de axios pour effectuer la requête POST
-    return API.post(url, data)
+    return API.post(url)
         .then((response) => {
             console.log('La plante a été arrosée');
             return response;

@@ -15,7 +15,6 @@ export function PlantHeaderList() {
     type plant = {
         id: string,
         name : string,
-        urlImage : string,
     }
 
     useEffect(() => {
@@ -35,7 +34,6 @@ export function PlantHeaderList() {
         <PlantHeader
             id={item.id}
             name={item.name}
-            urlImage={item.urlImage}
             style={styles.headerImage}
         />
     );
