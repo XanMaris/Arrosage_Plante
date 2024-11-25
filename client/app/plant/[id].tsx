@@ -7,7 +7,7 @@ import SliderComponent from "@/app/plant/Slider";
 
 export default function PlantDetail() {
     const [plante, setPlante] = useState<any>(null);
-    const [id, setId] = useState<string | null>(useLocalSearchParams().toString());
+    const { id } = useLocalSearchParams();
 
 
     useEffect(() => {
@@ -18,15 +18,20 @@ export default function PlantDetail() {
 
     function getPlant() {
         if (!id) return;
-
-        const url = `http://localhost:8080/plant/${id}`;
-        fetch(url)
+         console.log(id.toString());
+        const url = `http://localhost:8080/api/plant/${id}`;
+        fetch(url, {
+            method: 'GET', // or 'POST' based on your need
+        })
             .then(response => response.json())
             .then(data => setPlante(data))
             .catch(error => console.error("Erreur lors de la récupération des données de la plante", error));
     }
 
-
+    function arroserPlante()
+    {
+        
+    }
     const handleChange = () => { };
 
     function deletePlante() {
@@ -51,10 +56,10 @@ export default function PlantDetail() {
                         src={plante.imageUrl || "https://fastly.picsum.photos/id/305/4928/3264.jpg?hmac=s2FLjeAIyYH0CZl3xuyOShFAtL8yEGiYk31URLDxQCI"}
                         alt="Image d'illustration de la plante"
                     />
-                    <SliderComponent />
+                    <SliderComponent humidityRate={plante.humidityRate} />
                 </div>
                 <ThemedText type="subtitle" style={{ paddingTop: 10 }}>
-                    {plante.nom || "Nom de la plante"}
+                    {plante.name || "Nom de la plante"}
                 </ThemedText>
                 <ThemedText type="default" style={{ marginBottom: 10 }}>
                     {plante.description || "Description de la plante"}
@@ -63,19 +68,19 @@ export default function PlantDetail() {
                     <ThemedText type="subtitle" style={{ marginBottom: 10 }}>
                         Arrosage automatique
                     </ThemedText>
-                    <Switch onChange={handleChange} />
+                    <Switch onChange={handleChange} value={plante.automaticWatering} />
                 </label>
                 <label style={styles.labelWithInput}>
                     <ThemedText type="subtitle">Taux d'humidité journalier</ThemedText>
                     <input
                         type="number"
                         readOnly={true}
-                        value={plante.humidity || 50}
+                        value={plante.waterByDayPurcentage}
                         style={styles.input}
                     />
                 </label>
                 <div style={styles.waterButton}>
-                    <Button title={"Arroser"} />
+                    <Button title={"Arroser"} onPress={arroserPlante} />
                 </div>
                 <div style={styles.deleteButton}>
                     <Button onPress={deletePlante} title={"Supprimer"} color={"red"} />

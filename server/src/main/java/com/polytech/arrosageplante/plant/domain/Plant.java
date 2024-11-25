@@ -14,11 +14,14 @@ public final class Plant {
     private double humidityRate;
     private boolean automaticWatering;
 
-    public Plant(String name, String description, double humidityRate, boolean automaticWatering) {
+    private double waterByDayPurcentage;
+
+    public Plant(String name, String description, double humidityRate, boolean automaticWatering, double waterByDayPurcentage) {
         this.name = name;
         this.description = description;
         this.humidityRate = humidityRate;
         this.automaticWatering = automaticWatering;
+        this.waterByDayPurcentage = waterByDayPurcentage;
     }
 
     protected Plant() {
@@ -45,6 +48,8 @@ public final class Plant {
         return automaticWatering;
     }
 
+    public double getWaterByDayPurcentage() { return waterByDayPurcentage;}
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -53,6 +58,7 @@ public final class Plant {
         return Objects.equals(this.name, that.name) &&
                 Objects.equals(this.description, that.description) &&
                 Double.doubleToLongBits(this.humidityRate) == Double.doubleToLongBits(that.humidityRate) &&
+                Double.doubleToLongBits(this.waterByDayPurcentage) == Double.doubleToLongBits(that.waterByDayPurcentage) &&
                 this.automaticWatering == that.automaticWatering;
     }
 
@@ -67,7 +73,8 @@ public final class Plant {
                 "name=" + name + ", " +
                 "description=" + description + ", " +
                 "humidityRate=" + humidityRate + ", " +
-                "automaticWatering=" + automaticWatering + ']';
+                "automaticWatering=" + automaticWatering +
+                "waterByDayPurcentage=" + waterByDayPurcentage + ']';
     }
 
 }
