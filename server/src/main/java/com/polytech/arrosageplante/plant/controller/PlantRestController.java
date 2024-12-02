@@ -6,6 +6,7 @@ import com.polytech.arrosageplante.plant.measure.domain.PlantMeasure;
 import com.polytech.arrosageplante.plant.measure.service.PlantMeasureService;
 import com.polytech.arrosageplante.plant.service.PlantAddDTO;
 import com.polytech.arrosageplante.plant.service.PlantCrudService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -77,10 +78,15 @@ public class PlantRestController {
     }
 
     @PostMapping(value = "plant/{id}/water")
-    public void waterPlant(@PathVariable String id) {
+    public ResponseEntity<?> waterPlant(@PathVariable String id) {
         Plant plant = this.plantCrudService.getPlant(id);
 
-        this.webSocketPublisherService.arroser(plant);
+        try {
+            this.webSocketPublisherService.arroser(plant);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping(value = "plant/{id}/measures/day")

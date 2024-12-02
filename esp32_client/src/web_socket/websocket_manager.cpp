@@ -39,7 +39,9 @@ void WebSocketManager::onMessageReceived(WStype_t type, uint8_t *payload, size_t
                 }
 
                 if (strcmp(action, "ARROSER") == 0) {
-                    this->handleArroser();
+                    const float humidityTarget = jsonDoc["humidityTarget"];
+                    const float soilWaterRetentionFactor = jsonDoc["soilWaterRetentionFactor"];
+                    this->handleArroser(humidityTarget, soilWaterRetentionFactor);
                 } else if (strcmp(action, "GETHUMIDITY") == 0) {
                     this->handleGetAirHumidity();
                 } else if (strcmp(action, "GETWATERLEVEL") == 0) {
@@ -56,7 +58,7 @@ void WebSocketManager::onMessageReceived(WStype_t type, uint8_t *payload, size_t
     }
 }
 
-WebSocketManager::WebSocketManager(AirSensor& airSensor, SoilMoistureSensor& soilMoistureSensor) : webSocketClient(WebSocketsClient()), airSensor(airSensor), soilMoistureSensor(soilMoistureSensor)
+WebSocketManager::WebSocketManager(AirSensor& airSensor, SoilMoistureSensor& soilMoistureSensor, Pump& pump) : webSocketClient(WebSocketsClient()), airSensor(airSensor), soilMoistureSensor(soilMoistureSensor), pump(pump)
 {
 }
 
@@ -74,9 +76,10 @@ void WebSocketManager::loop()
     this->sendPeriodicSensorData();
 }
 
-void WebSocketManager::handleArroser()
+void WebSocketManager::handleArroser(float humidityTarget, float soilWaterRetentionFactor)
 {
     Serial.println("[Action] Handling 'ARROSER'");
+    this->pump.fill(this->soilMoistureSensor.humidity(), humidityTarget, soilWaterRetentionFactor);
 }
 
 void WebSocketManager::handleGetAirHumidity()

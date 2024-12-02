@@ -1,7 +1,7 @@
 package com.polytech.arrosageplante.esp32.communication.websocket.output;
 
 import com.polytech.arrosageplante.esp32.communication.websocket.CommandWebSocketHandler;
-import com.polytech.arrosageplante.esp32.communication.websocket.output.command.OutputCommand;
+import com.polytech.arrosageplante.esp32.communication.websocket.output.command.OutputCommandFillPlant;
 import com.polytech.arrosageplante.plant.domain.Plant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,12 +12,8 @@ public class WebSocketPublisherService {
     @Autowired
     private CommandWebSocketHandler commandWebSocketHandler;
 
-    public void sendCommand(OutputCommand outputCommand) {
-        commandWebSocketHandler.sendCommand(outputCommand);
-    }
-
     public void arroser(Plant plant) {
-        sendCommand(new OutputCommand(OutputAction.ARROSER));
+        commandWebSocketHandler.fillPlant(new OutputCommandFillPlant(plant.getWaterByDayPercentage(), plant.getWaterRetentionCoefficient()));
     }
 
     public void associatePlantIdToEsp32(String id) {
