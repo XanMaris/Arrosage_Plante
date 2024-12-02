@@ -2,16 +2,13 @@ package com.polytech.arrosageplante.esp32.communication.websocket;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.polytech.arrosageplante.esp32.communication.websocket.exception.CommunicationError;
 import com.polytech.arrosageplante.esp32.communication.websocket.input.command.InputCommand;
 import com.polytech.arrosageplante.esp32.communication.websocket.input.command.InputCommandFactory;
 import com.polytech.arrosageplante.esp32.communication.websocket.input.command.InputPlantDetailsCommand;
 import com.polytech.arrosageplante.esp32.communication.websocket.input.handler.PlantDetailsReceiveService;
-import com.polytech.arrosageplante.esp32.communication.websocket.output.command.OutputCommand;
+import com.polytech.arrosageplante.esp32.communication.websocket.output.command.OutputCommandFillPlant;
 import com.polytech.arrosageplante.esp32.communication.websocket.output.command.OutputCommandPlantAssociation;
-import com.polytech.arrosageplante.plant.domain.Plant;
-import com.polytech.arrosageplante.plant.measure.domain.PlantMeasure;
-import com.polytech.arrosageplante.plant.measure.service.PlantMeasureService;
-import com.polytech.arrosageplante.plant.service.PlantCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -19,6 +16,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
@@ -71,23 +69,27 @@ public class CommandWebSocketHandler extends TextWebSocketHandler {
         sessions.remove(session);
     }
 
-    private void sendMessage(TextMessage textMessage) {
-        try {
-            for (WebSocketSession session : sessions) {
-                if (session.isOpen()) {
+    public void sendMessage(TextMessage textMessage) {
+        for (WebSocketSession session : sessions) {
+            if (session.isOpen()) {
+                try {
                     session.sendMessage(textMessage);
+                } catch (IOException ioException) {
+                    throw new CommunicationError();
                 }
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 
-    public void sendCommand(OutputCommand outputCommand) {
+    /**
+     * Envoie la commande d'arrosage à l'esp32
+     * @param outputCommandFillPlant
+     */
+    public void fillPlant(OutputCommandFillPlant outputCommandFillPlant) {
         try {
-            String jsonCommand = this.objectMapper.writeValueAsString(outputCommand);
+            String jsonCommand = this.objectMapper.writeValueAsString(outputCommandFillPlant);
             this.sendMessage(new TextMessage(jsonCommand));
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
