@@ -8,6 +8,7 @@ public record PlantAddDTO(
         double waterByDayPercentage,
         double waterRetentionCoefficient,
         boolean autoWatering,
-        MultipartFile image
+        MultipartFile image,
+        String privateEsp32Code
 ) {
 }

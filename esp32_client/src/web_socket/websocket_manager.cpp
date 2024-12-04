@@ -5,11 +5,21 @@ void WebSocketManager::onMessageReceived(WStype_t type, uint8_t *payload, size_t
     switch (type) {
         case WStype_DISCONNECTED:
             Serial.println("[WebSocket] Disconnected");
+            this->sync = false;
+            this->plantId = "";
             break;
 
         case WStype_CONNECTED:
-            Serial.println("[WebSocket] Connected");
-            this->webSocketClient.sendTXT("Hello from ESP32");
+            {
+                Serial.println("[WebSocket] Connected");
+                StaticJsonDocument<128> jsonDoc;
+                
+                jsonDoc["action"] = "SYNC";
+                jsonDoc["privateCode"] = "123456789"; // TODO: use macAdress/unique code when finished
+                char buffer[128];
+                serializeJson(jsonDoc, buffer, sizeof(buffer));
+                this->webSocketClient.sendTXT(buffer);
+            }
             break;
 
         case WStype_TEXT: {
@@ -31,14 +41,13 @@ void WebSocketManager::onMessageReceived(WStype_t type, uint8_t *payload, size_t
             }
 
             if(strcmp(action, "PLANTASSOCIATION") == 0) {
-                const char* plantId = jsonDoc["plantId"];
-                this->plantId = plantId;
+                this->plantId = String(jsonDoc["plantId"].as<const char*>());
+                this->sync = true;
             } else {
-                if(this->plantId == nullptr) {
+                if(this->plantId == nullptr || this->plantId == "") {
                     Serial.printf("Error during plant association");
                 }
-
-                if (strcmp(action, "ARROSER") == 0) {
+                else if (strcmp(action, "ARROSER") == 0) {
                     const float humidityTarget = jsonDoc["humidityTarget"];
                     const float soilWaterRetentionFactor = jsonDoc["soilWaterRetentionFactor"];
                     this->handleArroser(humidityTarget, soilWaterRetentionFactor);
@@ -62,7 +71,7 @@ WebSocketManager::WebSocketManager(AirSensor& airSensor, SoilMoistureSensor& soi
 {
 }
 
-void WebSocketManager::begin(const char *host, uint16_t port, const char *endpoint)
+void WebSocketManager::begin(const char *host, uint16_t port, const char *endpoint, String macAdress)
 {
     this->webSocketClient.begin(host, port, endpoint, "json");
     this->webSocketClient.onEvent([this](WStype_t type, uint8_t* payload, size_t length) {
@@ -73,7 +82,9 @@ void WebSocketManager::begin(const char *host, uint16_t port, const char *endpoi
 void WebSocketManager::loop()
 {
     this->webSocketClient.loop();
-    this->sendPeriodicSensorData();
+    if(this->sync == true) {
+        this->sendPeriodicSensorData();
+    }
 }
 
 void WebSocketManager::handleArroser(float humidityTarget, float soilWaterRetentionFactor)

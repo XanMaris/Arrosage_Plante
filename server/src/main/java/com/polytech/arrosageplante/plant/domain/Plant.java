@@ -8,8 +8,8 @@ import java.util.Objects;
 @Entity
 public final class Plant {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
     private String name;
     private String description;
     private boolean automaticWatering;
@@ -23,6 +23,8 @@ public final class Plant {
     @Lob
     private byte[] image;
     private String imageContentType;
+    @Column(name = "ESP32_PRIVATE_CODE")
+    private String esp32PrivateCode = null;
 
     public Plant(String name,
                  String description,
@@ -51,7 +53,7 @@ public final class Plant {
         return this.imageContentType;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -73,6 +75,14 @@ public final class Plant {
     }
 
     public double getWaterByDayPercentage() { return waterByDayPercentage;}
+
+    public String getEsp32PrivateCode() {
+        return esp32PrivateCode;
+    }
+
+    public void setEsp32PrivateCode(String esp32PrivateCode) {
+        this.esp32PrivateCode = esp32PrivateCode;
+    }
 
     @Override
     public boolean equals(Object obj) {

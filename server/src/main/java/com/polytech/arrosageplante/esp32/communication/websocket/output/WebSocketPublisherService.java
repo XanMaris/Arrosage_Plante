@@ -13,10 +13,10 @@ public class WebSocketPublisherService {
     private CommandWebSocketHandler commandWebSocketHandler;
 
     public void arroser(Plant plant) {
-        commandWebSocketHandler.fillPlant(new OutputCommandFillPlant(plant.getWaterByDayPercentage(), plant.getWaterRetentionCoefficient()));
+        commandWebSocketHandler.fillPlant(new OutputCommandFillPlant(plant.getWaterByDayPercentage(), plant.getWaterRetentionCoefficient()), plant.getId().toString());
     }
 
-    public void associatePlantIdToEsp32(String id) {
-        this.commandWebSocketHandler.associatePlantToEsp32(id);
+    public String associatePlantIdToEsp32(String privateCode, String id) {
+        return this.commandWebSocketHandler.associatePlantToEsp32(privateCode, id);
     }
 }

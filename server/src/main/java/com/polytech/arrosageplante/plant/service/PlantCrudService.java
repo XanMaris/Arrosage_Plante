@@ -1,5 +1,6 @@
 package com.polytech.arrosageplante.plant.service;
 
+import com.polytech.arrosageplante.esp32.communication.websocket.exception.FirstSynchronizationFailedException;
 import com.polytech.arrosageplante.esp32.communication.websocket.output.WebSocketPublisherService;
 import com.polytech.arrosageplante.exception.EntityNotFound;
 import com.polytech.arrosageplante.plant.domain.Plant;
@@ -52,7 +53,13 @@ public class PlantCrudService {
 
         Plant savedPlant = this.plantRepository.save(plant);
 
-        this.webSocketPublisherService.associatePlantIdToEsp32(savedPlant.getId());
+        try {
+            String privateCode = this.webSocketPublisherService.associatePlantIdToEsp32(plantAddDTO.privateEsp32Code(), savedPlant.getId().toString());
+            savedPlant.setEsp32PrivateCode(privateCode);
+            savedPlant = this.plantRepository.save(plant);
+        } catch (FirstSynchronizationFailedException e) {
+            throw e; // TODO: faire remonter un message d'erreur, pour indiquer au front qu'il y a une erreur de syncro entre l'esp et le serveur
+        }
 
         return savedPlant;
     }

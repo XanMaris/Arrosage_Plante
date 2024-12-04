@@ -12,7 +12,7 @@ public record PlantDetailDto(
         double waterByDayPercentage
 ) {
     public static PlantDetailDto fromPlant(Plant plant, double humidityRate) {
-        return new PlantDetailDto(plant.getId(),
+        return new PlantDetailDto(plant.getId().toString(),
                 plant.getName(),
                 plant.getDescription(),
                 humidityRate,

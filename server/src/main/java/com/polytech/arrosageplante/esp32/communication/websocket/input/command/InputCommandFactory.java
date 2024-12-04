@@ -22,6 +22,7 @@ public class InputCommandFactory {
 
         return switch (action) {
             case PLANT_DETAILS -> objectMapper.readValue(json, InputPlantDetailsCommand.class);
+            case SYNC -> objectMapper.readValue(json, InputSyncCommand.class);
         };
     }
 }

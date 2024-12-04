@@ -4,13 +4,12 @@ import {StyleSheet, Switch} from "react-native";
 import FilePreview from "@/components/AddPlanteComponent/FilePreview";
 import {ThemedText} from "@/components/ThemedText";
 
-// Déclaration des types des données du formulaire
 type Inputs = {
     name: string;
+    privateEsp32Code: string;
     waterByDayPercentage: number;
-    image: File | null; // Modifié pour accepter un seul fichier
+    image: File | null;
     description: string;
-    humidityRateSensorId: string; // ID du capteur
     waterRetentionCoefficient: number;
     autoWatering: boolean;
 };
@@ -27,27 +26,23 @@ export default function PlantForm() {
     const [file, setFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null); // Aperçu sous forme d'URL
 
-    // Fonction exécutée lors de la soumission du formulaire
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         console.log("Données soumises :", data);
 
-        // Créez un objet FormData
         const formData = new FormData();
 
-        // Ajoutez les autres données au FormData
         formData.append("name", data.name);
-        formData.append("waterByDayPercentage", String(data.waterByDayPercentage)); // Humidité en tant que chaîne
-        formData.append("waterRetentionCoefficient", String(data.waterByDayPercentage)); // Humidité en tant que chaîne
+        formData.append("privateEsp32Code", data.privateEsp32Code);
+        formData.append("waterByDayPercentage", String(data.waterByDayPercentage));
+        formData.append("waterRetentionCoefficient", String(data.waterRetentionCoefficient));
         formData.append("description", String(data.description));
         formData.append("autoWatering", String(data.autoWatering));
 
-        // Ajoutez l'image au FormData (si présente)
         if (file) {
-            formData.append("image", file); // L'image est envoyée en tant que fichier
+            formData.append("image", file);
         }
 
         try {
-            // Effectuer la requête POST
             const response = await fetch("http://localhost:8080/api/plant", {
                 method: "POST",
                 body: formData, // Données à envoyer
@@ -67,7 +62,6 @@ export default function PlantForm() {
         }
     };
 
-    // Gestion du changement de fichier dans le parent
     const handleFileChange = (file: File | null) => {
         setFile(file); // Met à jour le fichier dans l'état
         if (file) {
@@ -80,6 +74,26 @@ export default function PlantForm() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} style={styles.formStyle} id="formData">
+            <label className="flex flex-col" style={styles.labelStyle}>
+                <ThemedText>
+                    <span className="font-medium">Code unique de votre ESP32 :</span>
+                </ThemedText>
+                <div style={{display: "contents"}}>
+                    <input
+                        id="privateEsp32Code"
+                        style={styles.inputStyle}
+                        placeholder="Code unique"
+                        {...register("privateEsp32Code", {required: "Le code unique est obligatoire"})}
+                        className={`border p-2 rounded ${errors.privateEsp32Code ? "border-red-500" : ""}`}
+                    />
+                    {errors.privateEsp32Code && (
+                        <span className="text-red-500 text-sm" style={styles.warningStyle}>
+                            {errors.privateEsp32Code.message}
+                        </span>
+                    )}
+                </div>
+            </label>
+
             <label className="flex flex-col" style={styles.labelStyle}>
                 <ThemedText>
                     <span className="font-medium">Nom de la plante :</span>

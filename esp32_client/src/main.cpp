@@ -26,7 +26,7 @@ void setup() {
   airSensor.begin();
   soilMoistureSensor.begin();
   pump.begin();
-  webSocketManager.begin("192.168.43.121", 8080, "/api/ws");
+  webSocketManager.begin("192.168.43.121", 8080, "/api/ws", WiFi.macAddress());
 }
 
 void loop() {
