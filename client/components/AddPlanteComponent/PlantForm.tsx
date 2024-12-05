@@ -22,10 +22,8 @@ export default function PlantForm() {
         control,
         formState: {errors},
     } = useForm<Inputs>();
-
-    // États pour gérer l'image, son aperçu, et les capteurs
     const [file, setFile] = useState<File | null>(null);
-    const [preview, setPreview] = useState<string | null>(null); // Aperçu sous forme d'URL
+    const [preview, setPreview] = useState<string | null>(null);
 
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         console.log("Données soumises :", data);
@@ -48,7 +46,7 @@ export default function PlantForm() {
 
             if (response.status == 200) {
                 alert("Formulaire soumis avec succès !");
-                console.log(await response.data); // Réponse du serveur
+                console.log(await response.data);
                 setFile(null);
                 setPreview(null);
             } else {
@@ -61,12 +59,12 @@ export default function PlantForm() {
     };
 
     const handleFileChange = (file: File | null) => {
-        setFile(file); // Met à jour le fichier dans l'état
+        setFile(file);
         if (file) {
-            const objectUrl = URL.createObjectURL(file); // Crée un aperçu de l'image
-            setPreview(objectUrl); // Met à jour l'aperçu de l'image
+            const objectUrl = URL.createObjectURL(file);
+            setPreview(objectUrl);
         } else {
-            setPreview(null); // Supprime l'aperçu si aucun fichier n'est sélectionné
+            setPreview(null);
         }
     };
 

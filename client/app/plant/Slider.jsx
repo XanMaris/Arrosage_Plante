@@ -10,37 +10,36 @@ const CustomSlider = styled(Slider)(({ theme }) => ({
         fontSize: 12,
         fontWeight: 'normal',
         display: 'flex',
-        transform: 'none !important', // Réinitialiser les transformations par défaut
+        transform: 'none !important',
         marginTop : -10,
         '&::before': {
             position: 'absolute',
             content: '""',
             width: '8px',
             height: '8px',
-            transform: 'translate(-50%, -50%) rotate(45deg)', // Applique la rotation
+            transform: 'translate(-50%, -50%) rotate(45deg)',
             backgroundColor: 'inherit',
             left: '-1px',
             top: '50%',
         },
-        // Ajout de la surcharge pour left au lieu de right
-        left: '30px !important', // Remplacer right par left
-        right: 'unset', // Annuler la propriété right si elle est définie
+        left: '30px !important',
+        right: 'unset',
     },
 }));
 
 function valuetext(value: number) {
-    return `${value}%`; // Affiche la valeur en pourcentage
+    return `${value}%`;
 }
 
 export default function SliderComponent({ humidityRate }) {
     const [value, setValue] = useState(humidityRate);
 
     useEffect(() => {
-        setValue(humidityRate);  // Met à jour la valeur si la prop change
+        setValue(humidityRate);
     }, [humidityRate]);
 
     const handleSliderChange = (event: Event, newValue: any | any[]) => {
-        setValue(newValue); // Met à jour l'état avec la nouvelle valeur du slider
+        setValue(newValue);
     };
 
     return (

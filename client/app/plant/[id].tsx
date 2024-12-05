@@ -15,8 +15,8 @@ export default function PlantDetail() {
     useEffect(() => {
         const fetchPlantDetails = async () => {
             try {
-                const response = await infoPlant(id); // Appel de l'API
-                setPlante(response.data); // Mise à jour des données
+                const response = await infoPlant(id);
+                setPlante(response.data);
             } catch (error) {
                 console.error('Erreur lors de la récupération des données de la plante', error);
             }
@@ -27,7 +27,7 @@ export default function PlantDetail() {
 
     const handleArroser = async () => {
         try {
-            await arroserPlante(id, plante); // Appel de la fonction arroserPlante
+            await arroserPlante(id, plante);
         } catch (error) {
             alert('Erreur lors de l\'arrosage de la plante');
         }
@@ -36,7 +36,7 @@ export default function PlantDetail() {
 
     const handleDelete = async () => {
         try {
-            await deletePlante(id, plante); // Appel de la fonction deletePlante
+            await deletePlante(id, plante);
         } catch (error) {
             alert('Erreur lors de la suppression de la plante');
         }

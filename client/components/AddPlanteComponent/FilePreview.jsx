@@ -3,16 +3,16 @@ import { ThemedText } from "@/components/ThemedText";
 import { FaCloudUploadAlt } from "react-icons/fa";
 
 interface Props {
-    handleFileChange: (file: File | null) => void; // Fonction pour transmettre le fichier au parent
-    preview: string | null; // URL de l'aperçu
-    errorMessage: string | undefined; // Message d'erreur si présent
+    handleFileChange: (file: File | null) => void;
+    preview: string | null;
+    errorMessage: string | undefined;
 }
 
 const FilePreview: React.FC<Props> = ({ handleFileChange, preview, errorMessage }) => {
     const [localPreview, setLocalPreview] = useState(preview);
 
     useEffect(() => {
-        setLocalPreview(preview); // Met à jour localPreview chaque fois que preview change
+        setLocalPreview(preview);
     }, [preview]);
 
     return (
@@ -27,7 +27,7 @@ const FilePreview: React.FC<Props> = ({ handleFileChange, preview, errorMessage 
                     accept="image/*"
                     onChange={(e) => {
                         const file = e.target.files?.[0] || null;
-                        handleFileChange(file); // Appel de la fonction du parent
+                        handleFileChange(file);
                     }}
                     style={styles.inputFile}
                 />
@@ -81,8 +81,8 @@ const styles = {
         marginBottom: 8,
     },
     iconStyle: {
-        fontSize: "60px", // Adjust the icon size
-        color: "#ffffff", // Change the color of the icon if needed
+        fontSize: "60px",
+        color: "#ffffff",
     },
 };
 

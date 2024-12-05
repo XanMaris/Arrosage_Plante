@@ -21,16 +21,17 @@ export function PlantHeaderList() {
     useEffect(() => {
         const getPlants = async () => {
             try {
-                setLoading(true);
                 const response = await fetchPlant(); // Appel API pour récupérer les plantes
                 console.log(response.data);
+                console.log("Loeading" +loading);
                 setData(response.data);
+                setLoading(false);
             } catch (err) {
                 await AsyncStorage.removeItem("token");
-                window.location.reload();
-                console.error(err);
-            } finally {
+                console.log("Loeading err" +loading);
+                await window.location.reload()
                 setLoading(false);
+                console.error(err);
             }
         };
 
@@ -48,18 +49,19 @@ export function PlantHeaderList() {
             </View>
         );
     }
-
-    return (
-        <FlatList
-            data={data}
-            key={numColumns}
-            keyExtractor={(item) => item.id}
-            renderItem={renderItem}
-            numColumns={numColumns}
-            columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
-            contentContainerStyle={styles.list}
-        />
-    );
+    else {
+        return (
+            <FlatList
+                data={data}
+                key={numColumns}
+                keyExtractor={(item) => item.id}
+                renderItem={renderItem}
+                numColumns={numColumns}
+                columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
+                contentContainerStyle={styles.list}
+            />
+        );
+    }
 }
 
 const styles = StyleSheet.create({

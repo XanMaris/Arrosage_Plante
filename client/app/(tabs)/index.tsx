@@ -7,11 +7,11 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { PlantHeaderList } from '@/components/PlantHeaderList';
-import Login from '../../components/API_Auth/Login'; // Assurez-vous que ce composant existe
+import Login from '../../components/API_Auth/Login';
 
 export default function HomeScreen() {
     const [loading, setLoading] = useState(true);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // Détermine si l'utilisateur est connecté
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
         const checkToken = async () => {
