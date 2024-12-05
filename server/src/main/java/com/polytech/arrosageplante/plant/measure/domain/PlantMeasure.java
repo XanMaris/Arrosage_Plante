@@ -2,7 +2,7 @@ package com.polytech.arrosageplante.plant.measure.domain;
 
 import com.polytech.arrosageplante.plant.domain.Plant;
 import jakarta.persistence.*;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -12,7 +12,7 @@ public class PlantMeasure {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime measureDate;
 
     @ManyToOne
