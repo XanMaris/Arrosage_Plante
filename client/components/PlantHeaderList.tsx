@@ -1,42 +1,53 @@
 import React, { useState, useEffect } from "react";
-import { Animated, StyleSheet, useWindowDimensions } from "react-native";
+import { Animated, StyleSheet, View, ActivityIndicator, useWindowDimensions } from "react-native";
 import { PlantHeader } from "@/components/PlantHeader";
-import {number} from "prop-types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import {fetchPlant} from "./API_Auth/api"
+import { fetchPlant } from "./API_Auth/api";
 
 const FlatList = Animated.FlatList;
 
 export function PlantHeaderList() {
     const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
     const { width } = useWindowDimensions();
     const numColumns = width < 768 ? 1 : 3;
 
-    type plant = {
-        id: string,
-        name : string,
-    }
+    type Plant = {
+        id: string;
+        name: string;
+    };
 
     useEffect(() => {
         const getPlants = async () => {
             try {
-                const response = await fetchPlant(); // Utilisation de la méthode fetchPlant pour récupérer les plantes
-                console.log(response.data)
-                setData(response.data); // Met à jour l'état avec les données
+                setLoading(true);
+                const response = await fetchPlant(); // Appel API pour récupérer les plantes
+                console.log(response.data);
+                setData(response.data);
             } catch (err) {
+                await AsyncStorage.removeItem("token");
+                window.location.reload();
                 console.error(err);
+            } finally {
+                setLoading(false);
             }
         };
-        getPlants();
-    }, []); // Ce useEffect se déclenche uniquement au montage du composant
 
-    const renderItem = ({ item }: { item:  plant }) =>  (
-        <PlantHeader
-            id={item.id}
-            name={item.name}
-            style={styles.headerImage}
-        />
+        getPlants();
+    }, []);
+
+    const renderItem = ({ item }: { item: Plant }) => (
+        <PlantHeader id={item.id} name={item.name} style={styles.headerImage} />
     );
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+    }
 
     return (
         <FlatList
@@ -61,5 +72,10 @@ const styles = StyleSheet.create({
     headerImage: {
         flex: 1,
         margin: 4,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
     },
 });
