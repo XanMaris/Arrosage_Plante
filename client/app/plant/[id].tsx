@@ -5,12 +5,13 @@ import { Button, StyleSheet, Switch, Linking } from "react-native";
 import {Stack, useLocalSearchParams} from "expo-router";
 import SliderComponent from "@/app/plant/Slider";
 import { useNavigation } from '@react-navigation/native';
-import {arroserPlante, deletePlante, infoPlant} from "@/components/API_Auth/api";
+import { arroserPlante, deletePlante, editPlanteHumidity, infoPlant } from "@/components/API_Auth/api";
+import {number} from "prop-types";
 
 export default function PlantDetail() {
     const [plante, setPlante] = useState<any>(null);
+    const [displayEdit, setDisplayEdit] = useState(false);
     const { id } = useLocalSearchParams();
-
 
     useEffect(() => {
         const fetchPlantDetails = async () => {
@@ -28,10 +29,12 @@ export default function PlantDetail() {
     const handleArroser = async () => {
         try {
             await arroserPlante(id, plante); // Appel de la fonction arroserPlante
+            setDisplayEdit(false);
         } catch (error) {
             alert('Erreur lors de l\'arrosage de la plante');
         }
     };
+
     const handleChange = () => { };
 
     const handleDelete = async () => {
@@ -41,6 +44,24 @@ export default function PlantDetail() {
             alert('Erreur lors de la suppression de la plante');
         }
     };
+
+    const handleEdit = async () => {
+        try {
+            await editPlanteHumidity(id, plante.waterByDayPercentage);
+            setDisplayEdit(false);
+        } catch (error) {
+            alert("Erreur lors de la modification de l'humidité de la plante");
+        }
+    }
+
+    const handleHumidityChange = (value) => {
+        setPlante({
+            ...plante,
+            waterByDayPercentage: parseInt(value)
+        })
+        console.log(plante);
+        setDisplayEdit(true);
+    }
 
     if (!plante) {
         return (
@@ -78,7 +99,7 @@ export default function PlantDetail() {
                     <ThemedText type="subtitle">Taux d'humidité journalier</ThemedText>
                     <input
                         type="number"
-                        readOnly={true}
+                        onInput={(e) => handleHumidityChange(e.target.value)}
                         value={plante.waterByDayPercentage}
                         style={styles.input}
                     />
@@ -86,7 +107,8 @@ export default function PlantDetail() {
                 <div style={styles.waterButton}>
                     <Button title={"Arroser"} onPress={handleArroser} />
                 </div>
-                <div style={styles.deleteButton}>
+                <div style={styles.actionsDataButtons}>
+                    { displayEdit && <Button onPress={handleEdit} title={"Modifier"} color={"blue"} /> }
                     <Button onPress={handleDelete} title={"Supprimer"} color={"red"} />
                 </div>
             </ThemedView>
@@ -134,9 +156,8 @@ const styles = StyleSheet.create({
         bottom: 8,
         right: 8,
     },
-    deleteButton: {
+    actionsDataButtons: {
         position: 'absolute',
-        backgroundColor: "red",
         bottom: 8,
         left: 8,
     }
