@@ -4,14 +4,11 @@ import com.polytech.arrosageplante.exception.EntityNotFound;
 import com.polytech.arrosageplante.plant.domain.Plant;
 import com.polytech.arrosageplante.plant.repository.PlantRepository;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-
+@RequestMapping("/plant")
 @RestController
 public class PlantRestController {
     private final PlantRepository plantRepository;
@@ -22,12 +19,12 @@ public class PlantRestController {
     }
 
 
-    @GetMapping("plant")
+    @GetMapping("/")
     public List<Plant> getPlants() {
         return this.plantRepository.findAll();
     }
 
-    @GetMapping("plant/{id}")
+    @GetMapping("/{id}")
     public Plant getPlant(@PathVariable Long id) {
         Optional<Plant> plant = this.plantRepository.findById(id);
 
@@ -40,7 +37,7 @@ public class PlantRestController {
         return plant.get();
     }
 
-    @DeleteMapping("plant/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePlant(@PathVariable Long id) {
         Optional<Plant> plant = this.plantRepository.findById(id);
 

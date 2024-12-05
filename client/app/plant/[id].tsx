@@ -5,6 +5,7 @@ import { Button, StyleSheet, Switch, Linking } from "react-native";
 import {Stack, useLocalSearchParams} from "expo-router";
 import SliderComponent from "@/app/plant/Slider";
 import { useNavigation } from '@react-navigation/native';
+import {arroserPlante, deletePlante, infoPlant} from "@/components/API_Auth/api";
 
 export default function PlantDetail() {
     const [plante, setPlante] = useState<any>(null);
@@ -12,74 +13,34 @@ export default function PlantDetail() {
 
 
     useEffect(() => {
-        if (id) {
-            getPlant();
-        }
+        const fetchPlantDetails = async () => {
+            try {
+                const response = await infoPlant(id); // Appel de l'API
+                setPlante(response.data); // Mise à jour des données
+            } catch (error) {
+                console.error('Erreur lors de la récupération des données de la plante', error);
+            }
+        };
+
+        fetchPlantDetails();
     }, [id]);
 
-    function getPlant() {
-        if (!id) return;
-         console.log(id.toString());
-        const url = `http://localhost:8080/api/plant/${id}`;
-        fetch(url, {
-            method: 'GET', // or 'POST' based on your need
-        })
-            .then(response => response.json())
-            .then(data => setPlante(data))
-            .catch(error => console.error("Erreur lors de la récupération des données de la plante", error));
-    }
-
-    function arroserPlante() {
-
-        const url = `http://localhost:8080/api/plant/${id}/arroser`;
-        const data = {
-            waterByDayPurcentage: plante.waterByDayPurcentage,
-            automaticWatering: plante.automaticWatering,
-        };
-        // Effectuer la requête POST
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                alert('la plante a été arrosé');
-            })
-            .catch((error) => {
-                alert('Erreur lors de l\'arrosage de la plante :');
-            });
-    }
+    const handleArroser = async () => {
+        try {
+            await arroserPlante(id, plante); // Appel de la fonction arroserPlante
+        } catch (error) {
+            alert('Erreur lors de l\'arrosage de la plante');
+        }
+    };
     const handleChange = () => { };
 
-    function deletePlante() {
-        if (!id) {
-            console.log("ID de la plante introuvable.");
-            return;
+    const handleDelete = async () => {
+        try {
+            await deletePlante(id, plante); // Appel de la fonction deletePlante
+        } catch (error) {
+            alert('Erreur lors de la suppression de la plante');
         }
-
-        const url = `http://localhost:8080/api/plant/${id}`;
-
-        fetch(url, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Erreur lors de la suppression de la plante");
-                }
-                alert(`${plante.name} supprimée avec succès.`);
-                // @ts-ignore
-                window.location.href = "/";
-            })
-            .catch((error) => {
-                alert("Erreur lors de la suppression de la plante");
-            });
-    }
+    };
 
     if (!plante) {
         return (
@@ -123,10 +84,10 @@ export default function PlantDetail() {
                     />
                 </label>
                 <div style={styles.waterButton}>
-                    <Button title={"Arroser"} onPress={arroserPlante} />
+                    <Button title={"Arroser"} onPress={handleArroser} />
                 </div>
                 <div style={styles.deleteButton}>
-                    <Button onPress={deletePlante} title={"Supprimer"} color={"red"} />
+                    <Button onPress={handleDelete} title={"Supprimer"} color={"red"} />
                 </div>
             </ThemedView>
         </>
