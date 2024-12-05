@@ -79,7 +79,7 @@ export default function PlantDetail() {
                     <input
                         type="number"
                         readOnly={true}
-                        value={plante.waterByDayPurcentage}
+                        value={plante.waterByDayPercentage}
                         style={styles.input}
                     />
                 </label>

@@ -57,3 +57,20 @@ export const deletePlante = (id, plante) => {
             throw error;
         });
 };
+
+export const addPlante = (data, fileData) => {
+    const formData = new FormData();
+
+    formData.append("name", data.name);
+    formData.append("privateEsp32Code", data.privateEsp32Code);
+    formData.append("waterByDayPercentage", String(data.waterByDayPercentage));
+    formData.append("waterRetentionCoefficient", String(data.waterRetentionCoefficient));
+    formData.append("description", String(data.description));
+    formData.append("autoWatering", String(data.autoWatering));
+
+    if (fileData) {
+        formData.append("image", fileData);
+    }
+
+    return API.post("/plant", formData);
+}

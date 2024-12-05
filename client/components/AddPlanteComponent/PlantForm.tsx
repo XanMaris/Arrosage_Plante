@@ -3,6 +3,7 @@ import {useForm, SubmitHandler, Controller} from "react-hook-form";
 import {StyleSheet, Switch} from "react-native";
 import FilePreview from "@/components/AddPlanteComponent/FilePreview";
 import {ThemedText} from "@/components/ThemedText";
+import {addPlante} from "@/components/API_Auth/api";
 
 type Inputs = {
     name: string;
@@ -29,28 +30,25 @@ export default function PlantForm() {
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         console.log("Données soumises :", data);
 
-        const formData = new FormData();
-
-        formData.append("name", data.name);
-        formData.append("privateEsp32Code", data.privateEsp32Code);
-        formData.append("waterByDayPercentage", String(data.waterByDayPercentage));
-        formData.append("waterRetentionCoefficient", String(data.waterRetentionCoefficient));
-        formData.append("description", String(data.description));
-        formData.append("autoWatering", String(data.autoWatering));
-
-        if (file) {
-            formData.append("image", file);
-        }
-
         try {
-            const response = await fetch("http://localhost:8080/api/plant", {
-                method: "POST",
-                body: formData, // Données à envoyer
-            });
+            const formData = new FormData();
 
-            if (response.ok) {
+            formData.append("name", data.name);
+            formData.append("privateEsp32Code", data.privateEsp32Code);
+            formData.append("waterByDayPercentage", String(data.waterByDayPercentage));
+            formData.append("waterRetentionCoefficient", String(data.waterRetentionCoefficient));
+            formData.append("description", String(data.description));
+            formData.append("autoWatering", String(data.autoWatering));
+
+            if (file) {
+                formData.append("image", file);
+            }
+
+            const response = await addPlante(data, file);
+
+            if (response.status == 200) {
                 alert("Formulaire soumis avec succès !");
-                console.log(await response.json()); // Réponse du serveur
+                console.log(await response.data); // Réponse du serveur
                 setFile(null);
                 setPreview(null);
             } else {

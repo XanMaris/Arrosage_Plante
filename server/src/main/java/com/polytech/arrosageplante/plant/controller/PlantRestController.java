@@ -44,7 +44,7 @@ public class PlantRestController {
     public PlantDetailDto getPlant(@PathVariable String id) {
         Plant plant = this.plantCrudService.getPlant(id);
         PlantMeasure plantMeasureMostRecentMeasure = this.plantMeasureService.getMostRecentMeasure(plant);
-        return PlantDetailDto.fromPlant(plant, plantMeasureMostRecentMeasure.getAirHumidity());
+        return PlantDetailDto.fromPlant(plant, plantMeasureMostRecentMeasure.getSoilHumidity());
     }
 
     @GetMapping("/{id}/image")
