@@ -51,10 +51,6 @@ void WebSocketManager::onMessageReceived(WStype_t type, uint8_t *payload, size_t
                     const float humidityTarget = jsonDoc["humidityTarget"];
                     const float soilWaterRetentionFactor = jsonDoc["soilWaterRetentionFactor"];
                     this->handleArroser(humidityTarget, soilWaterRetentionFactor);
-                } else if (strcmp(action, "GETHUMIDITY") == 0) {
-                    this->handleGetAirHumidity();
-                } else if (strcmp(action, "GETWATERLEVEL") == 0) {
-                    this->handleGetWaterLevel();
                 } else {
                     Serial.printf("[Action] Unknown action: %s\n", action);
                 }
@@ -82,9 +78,6 @@ void WebSocketManager::begin(const char *host, uint16_t port, const char *endpoi
 void WebSocketManager::loop()
 {
     this->webSocketClient.loop();
-    if(this->sync == true) {
-        this->sendPeriodicSensorData();
-    }
 }
 
 void WebSocketManager::handleArroser(float humidityTarget, float soilWaterRetentionFactor)
@@ -93,58 +86,28 @@ void WebSocketManager::handleArroser(float humidityTarget, float soilWaterRetent
     this->pump.fill(this->soilMoistureSensor.humidity(), humidityTarget, soilWaterRetentionFactor);
 }
 
-void WebSocketManager::handleGetAirHumidity()
+void WebSocketManager::sendPeriodicSensorData(float airHumidity, float airTemperature, float soilHumidity)
 {
-    float humidityValue = this->airSensor.humidity();
-    
-    StaticJsonDocument<128> jsonDoc;
-    jsonDoc["action"] = "GETHUMIDITY";
-    
-    char valueStr[6];
-    snprintf(valueStr, sizeof(valueStr), "%.2f", humidityValue);
-    jsonDoc["value"] = valueStr;
-
-    jsonDoc["plantId"] = plantId;
-
-    char buffer[128];
-    serializeJson(jsonDoc, buffer, sizeof(buffer));
-
-    Serial.println(humidityValue);
-
-    this->webSocketClient.sendTXT(buffer);
-}
-
-void WebSocketManager::handleGetWaterLevel()
-{
-}
-
-void WebSocketManager::sendPeriodicSensorData()
-{
-    unsigned long currentMillis = millis();
-    if (currentMillis - lastSensorSendTime >= sensorSendInterval) {
-        lastSensorSendTime = currentMillis;
-
-        float airHumidity = this->airSensor.humidity();
-        float airTemperature = this->airSensor.temperature();
-        float soilHumidity = this->soilMoistureSensor.humidity();
-
-        StaticJsonDocument<256> jsonDoc;
-        jsonDoc["action"] = "PLANT_DETAILS";
-        char airHumidityStr[6];
-        snprintf(airHumidityStr, sizeof(airHumidityStr), "%.2f", airHumidity);
-        jsonDoc["airHumidity"] = airHumidityStr;
-        char airTemperatureStr[6];
-        snprintf(airTemperatureStr, sizeof(airTemperatureStr), "%.2f", airTemperature);
-        jsonDoc["airTemperature"] = airTemperatureStr;
-        char soilHumidityStr[6];
-        snprintf(soilHumidityStr, sizeof(soilHumidityStr), "%.2f", soilHumidity);
-        jsonDoc["soilHumidity"] = soilHumidityStr;
-        jsonDoc["plantId"] = this->plantId;
-
-        String json;
-        serializeJson(jsonDoc, json);
-        this->webSocketClient.sendTXT(json);
-
-        Serial.printf("[Sensor Data] airHumidity: %.2f, airTemperature: %.2f\n", airHumidity, airTemperature);
+    if(this->sync == false) {
+        return;
     }
+
+    StaticJsonDocument<256> jsonDoc;
+    jsonDoc["action"] = "PLANT_DETAILS";
+    char airHumidityStr[6];
+    snprintf(airHumidityStr, sizeof(airHumidityStr), "%.2f", airHumidity);
+    jsonDoc["airHumidity"] = airHumidityStr;
+    char airTemperatureStr[6];
+    snprintf(airTemperatureStr, sizeof(airTemperatureStr), "%.2f", airTemperature);
+    jsonDoc["airTemperature"] = airTemperatureStr;
+    char soilHumidityStr[6];
+    snprintf(soilHumidityStr, sizeof(soilHumidityStr), "%.2f", soilHumidity);
+    jsonDoc["soilHumidity"] = soilHumidityStr;
+    jsonDoc["plantId"] = this->plantId;
+
+    String json;
+    serializeJson(jsonDoc, json);
+    this->webSocketClient.sendTXT(json);
+
+    Serial.printf("[Sensor Data] airHumidity: %.2f, airTemperature: %.2f\n", airHumidity, airTemperature);
 }

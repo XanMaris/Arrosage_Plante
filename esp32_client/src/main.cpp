@@ -9,6 +9,25 @@ SoilMoistureSensor soilMoistureSensor = SoilMoistureSensor(A2);
 Pump pump = Pump(A6); // broche d2
 WebSocketManager webSocketManager = WebSocketManager(airSensor, soilMoistureSensor, pump);
 
+void websocketTask(void * parameter) {
+    while (true){
+        webSocketManager.loop();
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+}
+
+void sensorTask(void * parameter) {
+    while (true){
+        float airHumidity = airSensor.humidity();
+        float airTemperature = airSensor.temperature();
+        float soilHumidity = soilMoistureSensor.humidity();
+        
+        webSocketManager.sendPeriodicSensorData(airHumidity, airTemperature, soilHumidity);
+
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+}
+
 void setup() {
   Serial.begin(9600);
 
@@ -27,8 +46,26 @@ void setup() {
   soilMoistureSensor.begin();
   pump.begin();
   webSocketManager.begin("192.168.43.121", 8080, "/api/ws", WiFi.macAddress());
+
+  xTaskCreatePinnedToCore(
+        websocketTask,
+        "WebSocket Task",
+        4096,
+        NULL,
+        1,
+        NULL,
+        1);
+    
+  xTaskCreatePinnedToCore(
+      sensorTask,
+      "Sensor Task",
+      4096,
+      NULL,
+      1,
+      NULL,
+      1);
 }
 
 void loop() {
-  webSocketManager.loop();
+  vTaskDelay(1000 / portTICK_PERIOD_MS);
 }
