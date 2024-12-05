@@ -122,7 +122,7 @@ public class CommandWebSocketHandler extends TextWebSocketHandler {
             String jsonCommand = this.objectMapper.writeValueAsString(outputCommandFillPlant);
             this.sendMessage(new TextMessage(jsonCommand), plantId);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new CommunicationError("Erreur lors de l'envoi de la commande d'arrosage");
         }
     }
 
