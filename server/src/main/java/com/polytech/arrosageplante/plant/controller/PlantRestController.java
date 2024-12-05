@@ -1,7 +1,6 @@
 package com.polytech.arrosageplante.plant.controller;
 
 import com.polytech.arrosageplante.esp32.communication.websocket.output.WebSocketPublisherService;
-import com.polytech.arrosageplante.exception.EntityNotFound;
 import com.polytech.arrosageplante.plant.domain.Plant;
 import com.polytech.arrosageplante.plant.measure.domain.PlantMeasure;
 import com.polytech.arrosageplante.plant.measure.service.PlantMeasureService;
@@ -10,7 +9,6 @@ import com.polytech.arrosageplante.plant.service.PlantCrudService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,6 +31,13 @@ public class PlantRestController {
     @PostMapping(value = "", consumes = "multipart/form-data")
     public Plant addPlant(@ModelAttribute PlantAddDTO plantAddDTO) throws IOException {
         return this.plantCrudService.addPlant(plantAddDTO);
+    }
+
+    @PutMapping("/{id}/edit/humidity")
+    public PlantDetailDto editBaseHumidity(@PathVariable String id, @RequestBody PlantEditHumidityDto plantEditHumidityDto) {
+        Plant plant = this.plantCrudService.editHumidity(id, plantEditHumidityDto.waterByDayPercentage());
+        PlantMeasure plantMeasureMostRecentMeasure = this.plantMeasureService.getMostRecentMeasure(plant);
+        return PlantDetailDto.fromPlant(plant, plantMeasureMostRecentMeasure.getSoilHumidity());
     }
 
     @GetMapping("/")

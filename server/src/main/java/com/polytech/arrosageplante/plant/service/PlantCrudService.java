@@ -4,6 +4,7 @@ import com.polytech.arrosageplante.esp32.communication.websocket.exception.First
 import com.polytech.arrosageplante.esp32.communication.websocket.output.WebSocketPublisherService;
 import com.polytech.arrosageplante.exception.EntityNotFound;
 import com.polytech.arrosageplante.plant.domain.Plant;
+import com.polytech.arrosageplante.plant.exception.EditionException;
 import com.polytech.arrosageplante.plant.repository.PlantRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,6 +63,12 @@ public class PlantCrudService {
         }
 
         return savedPlant;
+    }
+
+    public Plant editHumidity(String id, double newHumidityBaseRate) {
+        Plant plantToEdit = this.plantRepository.findById(id).orElseThrow(EditionException::new);
+        plantToEdit.setWaterByDayPercentage(newHumidityBaseRate);
+        return this.plantRepository.save(plantToEdit);
     }
 
     public void deletePlant(String  id) {
