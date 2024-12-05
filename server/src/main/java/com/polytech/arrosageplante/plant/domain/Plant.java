@@ -84,6 +84,10 @@ public final class Plant {
         this.esp32PrivateCode = esp32PrivateCode;
     }
 
+    public void setWaterByDayPercentage(double waterByDayPercentage) {
+        this.waterByDayPercentage = waterByDayPercentage;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;

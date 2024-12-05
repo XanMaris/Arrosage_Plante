@@ -58,6 +58,22 @@ export const deletePlante = (id, plante) => {
         });
 };
 
+export const editPlanteHumidity = (plantId, newHumidity) => {
+    if(plantId === undefined) {
+        console.log("ID de la plante introuvable.");
+        throw new Error("ID de la plante introuvable inconnu");
+    }
+
+    const url = `/plant/${plantId}/edit/humidity`;
+    return API.put(url, {waterByDayPercentage: newHumidity})
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            throw error;
+        });
+}
+
 export const addPlante = (data, fileData) => {
     const formData = new FormData();
 
