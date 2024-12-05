@@ -3,6 +3,8 @@ import { Animated, StyleSheet, useWindowDimensions } from "react-native";
 import { PlantHeader } from "@/components/PlantHeader";
 import {number} from "prop-types";
 
+import {fetchPlant} from "./API_Auth/api"
+
 const FlatList = Animated.FlatList;
 
 export function PlantHeaderList() {
@@ -17,11 +19,17 @@ export function PlantHeaderList() {
     }
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/plant')
-            .then((response) => response.json())
-            .then((data) => setData(data))
-            .catch((error) => console.error("Erreur lors de la récupération des plantes", error));
-    }, []);
+        const getPlants = async () => {
+            try {
+                const response = await fetchPlant(); // Utilisation de la méthode fetchPlant pour récupérer les plantes
+                console.log(response.data)
+                setData(response.data); // Met à jour l'état avec les données
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        getPlants();
+    }, []); // Ce useEffect se déclenche uniquement au montage du composant
 
     const renderItem = ({ item }: { item:  plant }) =>  (
         <PlantHeader
