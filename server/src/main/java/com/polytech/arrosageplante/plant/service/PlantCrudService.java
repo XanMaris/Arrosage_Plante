@@ -65,9 +65,10 @@ public class PlantCrudService {
         return savedPlant;
     }
 
-    public Plant editHumidity(String id, double newHumidityBaseRate) {
+    public Plant edit(String id, double newHumidityBaseRate, boolean automaticWatering) {
         Plant plantToEdit = this.plantRepository.findById(id).orElseThrow(EditionException::new);
         plantToEdit.setWaterByDayPercentage(newHumidityBaseRate);
+        plantToEdit.setAutomaticWatering(automaticWatering);
         return this.plantRepository.save(plantToEdit);
     }
 

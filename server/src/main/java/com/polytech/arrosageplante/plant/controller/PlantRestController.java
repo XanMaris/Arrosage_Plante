@@ -33,9 +33,9 @@ public class PlantRestController {
         return this.plantCrudService.addPlant(plantAddDTO);
     }
 
-    @PutMapping("/{id}/edit/humidity")
-    public PlantDetailDto editBaseHumidity(@PathVariable String id, @RequestBody PlantEditHumidityDto plantEditHumidityDto) {
-        Plant plant = this.plantCrudService.editHumidity(id, plantEditHumidityDto.waterByDayPercentage());
+    @PutMapping("/{id}/edit")
+    public PlantDetailDto editBaseHumidity(@PathVariable String id, @RequestBody PlantEditDto plantEditDto) {
+        Plant plant = this.plantCrudService.edit(id, plantEditDto.waterByDayPercentage(), plantEditDto.automaticWatering());
         PlantMeasure plantMeasureMostRecentMeasure = this.plantMeasureService.getMostRecentMeasure(plant);
         return PlantDetailDto.fromPlant(plant, plantMeasureMostRecentMeasure.getSoilHumidity());
     }

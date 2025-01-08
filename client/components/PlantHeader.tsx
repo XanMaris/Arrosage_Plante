@@ -29,7 +29,7 @@ export function PlantHeader({
 
     return (
         <View style={[{backgroundColor}, style, styles.container]} {...otherProps}>
-            <img src={urlImage} alt={name}/>
+            <img src={urlImage || "https://fastly.picsum.photos/id/305/4928/3264.jpg?hmac=s2FLjeAIyYH0CZl3xuyOShFAtL8yEGiYk31URLDxQCI"} alt={name}/>
 
             <div style={styles.bottomAction}>
                 <ThemedText type="subtitle">{name}</ThemedText>

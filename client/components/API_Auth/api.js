@@ -58,20 +58,32 @@ export const deletePlante = (id, plante) => {
         });
 };
 
-export const editPlanteHumidity = (plantId, newHumidity) => {
+export const editPlanteHumidity = (plantId, newHumidity,newAutoWatering) => {
     if(plantId === undefined) {
         console.log("ID de la plante introuvable.");
         throw new Error("ID de la plante introuvable inconnu");
     }
 
-    const url = `/plant/${plantId}/edit/humidity`;
-    return API.put(url, {waterByDayPercentage: newHumidity})
+    const url = `/plant/${plantId}/edit`;
+    return API.put(url, {waterByDayPercentage: newHumidity,automaticWatering : newAutoWatering})
         .then((response) => {
             return response;
         })
         .catch((error) => {
             throw error;
         });
+}
+
+
+export const editPlantAutoWatering = (planteId, newAutoWatering) =>
+{
+    if(plantId === undefined) {
+        console.log("ID de la plante introuvable.");
+        throw new Error("ID de la plante introuvable inconnu");
+    }
+
+    const url = `/plant/${plantId}/edit/humidity`;
+
 }
 
 export const addPlante = (data, fileData) => {

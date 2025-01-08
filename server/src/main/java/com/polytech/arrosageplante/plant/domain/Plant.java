@@ -88,6 +88,10 @@ public final class Plant {
         this.waterByDayPercentage = waterByDayPercentage;
     }
 
+    public void setAutomaticWatering(boolean automaticWatering) {
+        this.automaticWatering = automaticWatering;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;

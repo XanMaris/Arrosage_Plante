@@ -36,8 +36,14 @@ export default function PlantDetail() {
         }
     };
 
-    const handleChange = () => { };
-
+    const handleChange = () => {
+        console.log(plante.automaticWatering);
+        setPlante((prevPlante) => ({
+            ...prevPlante,
+            automaticWatering: !prevPlante.automaticWatering,
+        }));
+        setDisplayEdit(true);
+    };
     const handleDelete = async () => {
         try {
             await deletePlante(id, plante);
@@ -48,7 +54,7 @@ export default function PlantDetail() {
 
     const handleEdit = async () => {
         try {
-            await editPlanteHumidity(id, plante.waterByDayPercentage);
+            await editPlanteHumidity(id, plante.waterByDayPercentage,plante.automaticWatering);
             setDisplayEdit(false);
         } catch (error) {
             alert("Erreur lors de la modification de l'humidité de la plante");
@@ -94,8 +100,12 @@ export default function PlantDetail() {
                     <ThemedText type="subtitle" style={{ marginBottom: 10 }}>
                         Arrosage automatique
                     </ThemedText>
-                    <Switch onChange={handleChange} value={plante.automaticWatering} />
+                <Switch
+                    onValueChange={handleChange}
+                    value={plante.automaticWatering}
+                />
                 </label>
+
                 <label style={styles.labelWithInput}>
                     <ThemedText type="subtitle">Taux d'humidité journalier</ThemedText>
                     <input
