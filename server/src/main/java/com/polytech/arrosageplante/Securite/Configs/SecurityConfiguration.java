@@ -35,7 +35,7 @@ public class SecurityConfiguration {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("auth/**", "ws", "/h2-console/**")
+                .requestMatchers("auth/**", "ws", "/h2-console/**", "/plant/*/image")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()

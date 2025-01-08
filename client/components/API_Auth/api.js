@@ -17,6 +17,8 @@ export const login = (credentials) => API.post('/auth/login', credentials);
 
 export const fetchPlant = () => API.get('/plant/');
 
+export const fetchImage = (id) => API.get(`/plant/${id}/image`)
+
 export const infoPlant = (id) => API.get(`/plant/${id}`);
 
 export const arroserPlante = (id, plante) => {
@@ -57,6 +59,33 @@ export const deletePlante = (id, plante) => {
             throw error;
         });
 };
+
+export const editPlanteHumidity = (plantId, newHumidity,newAutoWatering) => {
+    if(plantId === undefined) {
+        console.log("ID de la plante introuvable.");
+        throw new Error("ID de la plante introuvable inconnu");
+    }
+
+    const url = `/plant/${plantId}/edit`;
+    return API.put(url, {waterByDayPercentage: newHumidity,automaticWatering : newAutoWatering})
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            throw error;
+        });
+}
+
+export const editPlantAutoWatering = (planteId, newAutoWatering) =>
+{
+    if(plantId === undefined) {
+        console.log("ID de la plante introuvable.");
+        throw new Error("ID de la plante introuvable inconnu");
+    }
+
+    const url = `/plant/${plantId}/edit/humidity`;
+
+}
 
 export const addPlante = (data, fileData) => {
     const formData = new FormData();
