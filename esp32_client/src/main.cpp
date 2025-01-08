@@ -18,11 +18,7 @@ void websocketTask(void * parameter) {
 
 void sensorTask(void * parameter) {
     while (true){
-        float airHumidity = airSensor.humidity();
-        float airTemperature = airSensor.temperature();
-        float soilHumidity = soilMoistureSensor.humidity();
-        
-        webSocketManager.sendPeriodicSensorData(airHumidity, airTemperature, soilHumidity);
+        webSocketManager.sendPeriodicSensorData();
 
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }

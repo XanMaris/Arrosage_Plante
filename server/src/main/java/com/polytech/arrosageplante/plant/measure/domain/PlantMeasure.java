@@ -16,6 +16,7 @@ public class PlantMeasure {
     private LocalDateTime measureDate;
 
     @ManyToOne
+    @JoinColumn(name = "plant_id", nullable = false)
     private Plant plant;
 
     private double airHumidity;

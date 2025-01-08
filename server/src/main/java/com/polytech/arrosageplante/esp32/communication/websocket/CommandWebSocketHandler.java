@@ -11,6 +11,7 @@ import com.polytech.arrosageplante.esp32.communication.websocket.input.command.I
 import com.polytech.arrosageplante.esp32.communication.websocket.input.handler.PlantDetailsReceiveService;
 import com.polytech.arrosageplante.esp32.communication.websocket.output.command.OutputCommandFillPlant;
 import com.polytech.arrosageplante.esp32.communication.websocket.output.command.OutputCommandPlantAssociation;
+import com.polytech.arrosageplante.esp32.communication.websocket.output.command.OutputCommandPlantDisassociation;
 import com.polytech.arrosageplante.plant.domain.Plant;
 import com.polytech.arrosageplante.plant.repository.PlantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,5 +134,14 @@ public class CommandWebSocketHandler extends TextWebSocketHandler {
         this.ackSync(webSocketUnsynchronizedFinded.webSocketSession(), plantId);
 
         return webSocketUnsynchronizedFinded.syncCode();
+    }
+
+    public void disassociatePlantIdToEsp32(Long plantId) {
+        try {
+            String jsonCommand = this.objectMapper.writeValueAsString(new OutputCommandPlantDisassociation(plantId.toString()));
+            this.sendMessage(new TextMessage(jsonCommand), plantId.toString());
+        } catch (Exception e) {
+            throw new CommunicationError("Erreur lors de l'envoi de la commande de dissociation");
+        }
     }
 }

@@ -5,20 +5,14 @@ void WebSocketManager::onMessageReceived(WStype_t type, uint8_t *payload, size_t
     switch (type) {
         case WStype_DISCONNECTED:
             Serial.println("[WebSocket] Disconnected");
-            this->sync = false;
+            this->isAssociatedToPlant = false;
             this->plantId = "";
             break;
 
         case WStype_CONNECTED:
             {
                 Serial.println("[WebSocket] Connected");
-                StaticJsonDocument<128> jsonDoc;
-                
-                jsonDoc["action"] = "SYNC";
-                jsonDoc["privateCode"] = "123456789"; // TODO: use macAdress/unique code when finished
-                char buffer[128];
-                serializeJson(jsonDoc, buffer, sizeof(buffer));
-                this->webSocketClient.sendTXT(buffer);
+                this->preSyncToServer();
             }
             break;
 
@@ -42,8 +36,14 @@ void WebSocketManager::onMessageReceived(WStype_t type, uint8_t *payload, size_t
 
             if(strcmp(action, "PLANTASSOCIATION") == 0) {
                 this->plantId = String(jsonDoc["plantId"].as<const char*>());
-                this->sync = true;
-            } else {
+                this->isAssociatedToPlant = true;
+            }
+            else if(strcmp(action, "PLANTDISASSOCIATION") == 0) {
+                this->isAssociatedToPlant = false;
+                this->plantId = "";
+                this->reSyncToServer();
+            }
+            else {
                 if(this->plantId == nullptr || this->plantId == "") {
                     Serial.printf("Error during plant association");
                 }
@@ -75,6 +75,22 @@ void WebSocketManager::begin(const char *host, uint16_t port, const char *endpoi
     });
 }
 
+bool WebSocketManager::preSyncToServer() 
+{
+    StaticJsonDocument<128> jsonDoc;
+    
+    jsonDoc["action"] = "SYNC";
+    jsonDoc["privateCode"] = "123456789"; // TODO: use macAdress/unique code when finished
+    char buffer[128];
+    serializeJson(jsonDoc, buffer, sizeof(buffer));
+    return this->webSocketClient.sendTXT(buffer);
+}
+
+void WebSocketManager::reSyncToServer()
+{
+    this->preSyncToServer();
+}
+
 void WebSocketManager::loop()
 {
     this->webSocketClient.loop();
@@ -86,11 +102,15 @@ void WebSocketManager::handleArroser(float humidityTarget, float soilWaterRetent
     this->pump.fill(this->soilMoistureSensor.humidity(), humidityTarget, soilWaterRetentionFactor);
 }
 
-void WebSocketManager::sendPeriodicSensorData(float airHumidity, float airTemperature, float soilHumidity)
+void WebSocketManager::sendPeriodicSensorData()
 {
-    if(this->sync == false) {
+    if(this->isAssociatedToPlant == false) {
         return;
     }
+
+    float airHumidity = airSensor.humidity();
+    float airTemperature = airSensor.temperature();
+    float soilHumidity = soilMoistureSensor.humidity();
 
     StaticJsonDocument<256> jsonDoc;
     jsonDoc["action"] = "PLANT_DETAILS";
@@ -101,7 +121,6 @@ void WebSocketManager::sendPeriodicSensorData(float airHumidity, float airTemper
     snprintf(airTemperatureStr, sizeof(airTemperatureStr), "%.2f", airTemperature);
     jsonDoc["airTemperature"] = airTemperatureStr;
     char soilHumidityStr[6];
-    snprintf(soilHumidityStr, sizeof(soilHumidityStr), "%.2f", soilHumidity);
     jsonDoc["soilHumidity"] = soilHumidityStr;
     jsonDoc["plantId"] = this->plantId;
 

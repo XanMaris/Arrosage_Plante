@@ -81,6 +81,6 @@ public class PlantCrudService {
 
         this.plantRepository.deleteById(id);
 
-        // TODO: Faire une requête HTTP vers l'ESP-32 pour effectuer des actions supplémentaires, comme éteindre un système d'irrigation ou autre
+        this.webSocketPublisherService.disassociatePlantIdToEsp32(plant.get().getId());
     }
 }
