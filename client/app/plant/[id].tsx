@@ -78,6 +78,9 @@ export default function PlantDetail() {
         );
     }
 
+    const urlImage = `http://localhost:8080/api/plant/${id}/image`;
+
+
     return (
         <>
             <Stack.Screen options={{ title: "Détail d'une plante" }} />
@@ -85,7 +88,7 @@ export default function PlantDetail() {
                 <div style={styles.header}>
                     <img
                         style={styles.headerImage}
-                        src={plante.urlImage || "https://fastly.picsum.photos/id/305/4928/3264.jpg?hmac=s2FLjeAIyYH0CZl3xuyOShFAtL8yEGiYk31URLDxQCI"}
+                        src={urlImage || "https://fastly.picsum.photos/id/305/4928/3264.jpg?hmac=s2FLjeAIyYH0CZl3xuyOShFAtL8yEGiYk31URLDxQCI"}
                         alt="Image d'illustration de la plante"
                     />
                     <SliderComponent humidityRate={plante.humidityRate} />

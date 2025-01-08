@@ -17,6 +17,8 @@ export const login = (credentials) => API.post('/auth/login', credentials);
 
 export const fetchPlant = () => API.get('/plant/');
 
+export const fetchImage = (id) => API.get(`/plant/${id}/image`)
+
 export const infoPlant = (id) => API.get(`/plant/${id}`);
 
 export const arroserPlante = (id, plante) => {
@@ -73,7 +75,6 @@ export const editPlanteHumidity = (plantId, newHumidity,newAutoWatering) => {
             throw error;
         });
 }
-
 
 export const editPlantAutoWatering = (planteId, newAutoWatering) =>
 {
