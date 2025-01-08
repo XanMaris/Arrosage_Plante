@@ -1,8 +1,11 @@
 package com.polytech.arrosageplante.plant.domain;
 
+import com.polytech.arrosageplante.plant.measure.domain.PlantMeasure;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -25,6 +28,9 @@ public final class Plant {
     private String imageContentType;
     @Column(name = "ESP32_PRIVATE_CODE")
     private String esp32PrivateCode = null;
+
+    @OneToMany(mappedBy = "plant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PlantMeasure> plantMeasures = new ArrayList<>();
 
     public Plant(String name,
                  String description,

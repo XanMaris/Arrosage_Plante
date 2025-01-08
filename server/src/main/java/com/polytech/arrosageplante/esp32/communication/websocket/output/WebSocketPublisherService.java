@@ -19,4 +19,8 @@ public class WebSocketPublisherService {
     public String associatePlantIdToEsp32(String privateCode, String id) {
         return this.commandWebSocketHandler.associatePlantToEsp32(privateCode, id);
     }
+
+    public void disassociatePlantIdToEsp32(Long plantId) {
+        this.commandWebSocketHandler.disassociatePlantIdToEsp32(plantId);
+    }
 }

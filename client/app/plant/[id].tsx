@@ -4,9 +4,8 @@ import { ThemedText } from "@/components/ThemedText";
 import { Button, StyleSheet, Switch, Linking } from "react-native";
 import {Stack, useLocalSearchParams} from "expo-router";
 import SliderComponent from "@/app/plant/Slider";
-import { useNavigation } from '@react-navigation/native';
 import { arroserPlante, deletePlante, infoPlant, editPlanteHumidity } from "@/components/API_Auth/api";
-import { number } from "prop-types";
+import { router } from 'expo-router';
 
 export default function PlantDetail() {
     const [plante, setPlante] = useState<any>(null);
@@ -47,6 +46,7 @@ export default function PlantDetail() {
     const handleDelete = async () => {
         try {
             await deletePlante(id, plante);
+            router.replace('/');
         } catch (error) {
             alert('Erreur lors de la suppression de la plante');
         }
