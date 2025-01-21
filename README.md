@@ -156,3 +156,55 @@ else Utilisateur inconnu
 | Arroser une plante automatiquement         | Développement côté frontend et backend                                                                                                        |                                                                                                        |
 | Authentification                           | Formulaire de connexion côté frontend, authentification avec JWT côté back                                                                    |                                                                                                        |
 | Création d'un utilisateur                  | Formulaire de création de compte, persistance des données côté back                                                                           |                                                                                                        |
+
+
+
+
+# Difficultés rencontrées
+
+Durant notre projet, nous avons eu quelques problèmes que nous avons essayé de résoudre rapidement.
+
+## Echanges des données entre l'ESP et le serveur
+
+Sur le papier, nous voulions utiliser des requêtes MQTT. Ce protocole est basé sur TCPIP et est un protocole privilégié pour une communication machine vers machine. Nous nous étions orientées sur cette idée, car c'est un protocole simple et adapté au réseau sans fil.
+
+Le problème est au niveau de la réalisation, nous n'avions pas le temps à deux de développer un serveur MQTT. C'est donc par souci temporel qu'on s'est dirigé vers des WebSockets.
+ 
+ ## Plusieurs plantes
+
+Nous voulions gérer plusieurs plantes comme mentionner un peu plus tôt. Dans notre tête, nous nous étions simplement dit qu'il suffisait de rajouter un capteur dans un autre pot de plante et tout fonctionnerait parfaitement. Sauf qu'en réalité cela nécessiterai d'avoir plusieurs tuyaux pour arroser les différentes plantes et au vu de notre équipement actuel et de la charge de travail que nous avions, nous avons décidé de partir du principe que chaque pot serait connecté à un autre ESP. Cela nous permet de ne pas changer notre code et en plus est plus cohérent par rapport à la réalité. Lorsqu'on achète une lampe connectée par exemple, celle-ci est directement connectée à un microprocesseur.
+
+ ## Authentification
+
+Pour l'authentification, on est partie sur un système relativement simple, via l'utilisation du protocole JWT. On fonctionne avec un cookie et la possibilité de connecté l'utilisateur et de garder ce cookie en cache dans notre navigateur. On a donc empêché l'accès à certaines requêtes de notre serveur et on a fait la même chose côté client. Pour faire simple, l'utilisateur non connecté avait accès qu'a la page d'ajout de plante. 
+
+En vérité, cela est faux, il fallait qu'on autorise l'accès aux URL de connexion côté backend. Logique, si on ne permet pas à l'utilisateur de s'authentifier, il ne pourra rien faire.
+
+Lorsqu'on a implémenté cette autorisation, des erreurs Cors-Origin sont apparues et on a pris pas mal de temps pour réajuster le code afin de résoudre le problème. 
+
+C'était simplement un problème hiérarchique si on empêche la route parente, on ne peut accéder à la route enfant. On a donc corrigé ce problème et tout a fonctionné.
+
+## Effectués nos tests
+
+Quand on voulait tester notre code on était ultra dépendant du serveur de l'ESP. On doit connecter l'ESP dans le même réseau que notre serveur. A chaque fois qu'on rajoutait une fonctionnalité sur notre backend qui interagissait avec plusieurs éléments de l'ESP, on devait attendre que l'autre finisse ce qu'il avait à faire avec l'ESP pour ensuite connecter le bon appareil à l'ESP.
+
+
+## Probleme du capteur de niveau d'eau
+
+Pour utiliser notre pompe et pour s'assurer qu'on puisse délivrer à la plante le bon niveau d'eau. On doit s'assurer que notre réservoir d'eau contient assez d'eau pour l'arrosage adéquat.
+
+Le problème qu'on a, c'est qu'actuellement, on communique avec le serveur de façon plutôt simple. C'est tout le temps unidirectionnel, c'est soit on récupère les valeurs du capteur sois on ordonne à l'ESP de faire une action.
+
+On est bloqué par la structure en Web Socket et on devra trouver un moyen pour que quand le server envoie "arroser" --- "ESP"
+
+L'ESP regarde s'il a assez d'eau pour arroser les plantes puis dans le cas contraire envoie une alerte/message d'erreur au serveur. Cela veut dire que le serveur doit s'attendre à avoir une réponse de la part de l'ESP ce qui nous complique la tâche au vu de la structure du réseau.
+
+
+
+# Ressenti Personnel 
+
+Ce projet d’arroseur automatique de plantes a été une super expérience. Cela nous a permis de découvrir toutes les étapes d’un projet, du début à la fin.
+
+Nous avons utilisé des outils comme Spring Boot, React JS et un ESP32, ce qui nous a permis de mélanger logiciel et matériel. C’était parfois un défi de tout faire fonctionner ensemble, mais on a réussi en travaillant en équipe.
+
+Ce projet nous a non seulement appris de nouvelles compétences techniques, mais aussi montré l’importance de la collaboration. On a vraiment apprécié échanger des idées et avancer ensemble. C’était une expérience enrichissante et motivante pour tous les deux !
