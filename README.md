@@ -208,3 +208,11 @@ Ce projet d’arroseur automatique de plantes a été une super expérience. Cel
 Nous avons utilisé des outils comme Spring Boot, React JS et un ESP32, ce qui nous a permis de mélanger logiciel et matériel. C’était parfois un défi de tout faire fonctionner ensemble, mais on a réussi en travaillant en équipe.
 
 Ce projet nous a non seulement appris de nouvelles compétences techniques, mais aussi montré l’importance de la collaboration. On a vraiment apprécié échanger des idées et avancer ensemble. C’était une expérience enrichissante et motivante pour tous les deux !
+
+# Conclusion
+
+Ce projet d’arrosage automatique de plantes a été une expérience enrichissante. Il nous a permis de combiner logiciel et matériel, de résoudre des problèmes concrets et d’apprendre à gérer un projet de bout en bout.
+
+Nous avons rencontré des défis techniques, comme la communication entre l’ESP32 et le serveur, ou l’organisation des capteurs, mais nous avons réussi à les surmonter en réfléchissant ensemble et en travaillant en équipe.
+
+Ce projet nous a appris à collaborer efficacement et à mieux comprendre les interactions entre hardware et software. Nous sommes fiers du travail accompli et cette expérience nous donne envie de continuer à explorer d’autres projets techniques
