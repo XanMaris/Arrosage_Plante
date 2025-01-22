@@ -216,3 +216,10 @@ Ce projet d’arrosage automatique de plantes a été une expérience enrichissa
 Nous avons rencontré des défis techniques, comme la communication entre l’ESP32 et le serveur, ou l’organisation des capteurs, mais nous avons réussi à les surmonter en réfléchissant ensemble et en travaillant en équipe.
 
 Ce projet nous a appris à collaborer efficacement et à mieux comprendre les interactions entre hardware et software. Nous sommes fiers du travail accompli et cette expérience nous donne envie de continuer à explorer d’autres projets techniques
+
+
+# Annexe
+
+Schéma des connection de notre ESP 32 (avec un mmodèle arduino car le site proposait pas le modèle ESP 32)
+
+![Esp32](documentation/Esp32.png)
