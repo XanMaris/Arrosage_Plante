@@ -10,16 +10,22 @@ void Pump::begin()
     digitalWrite(this->pin, LOW); 
 }
 
-void Pump::fill(float humidityInitial, float humidityTarget, float soilWaterRetentionFactor)
+bool Pump::fill(float humidityInitial, float currentWaterLevel, float humidityTarget, float soilWaterRetentionFactor)
 {
     float humidityDifference = humidityTarget - humidityInitial;
 
     if (humidityDifference <= 0) {
         Serial.println("Humidité cible déjà atteinte, pas besoin d'ajouter d'eau.");
-        return;
+        return true;
     }
 
     float waterNeeded = (humidityDifference / soilWaterRetentionFactor) * this->recipientVolume;
+
+    if(waterNeeded >= currentWaterLevel) {
+        Serial.println("Pas assez d'eau dans le récipient");
+        return false;
+    }
+
     unsigned long pumpDuration = waterNeeded / this->waterFlowRate * 1000;
 
     Serial.println(pumpDuration);
@@ -30,4 +36,5 @@ void Pump::fill(float humidityInitial, float humidityTarget, float soilWaterRete
     digitalWrite(this->pin, LOW); 
 
     Serial.println("Arrosage terminé.");
+    return true;
 }

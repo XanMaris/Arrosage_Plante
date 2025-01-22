@@ -3,11 +3,9 @@ package com.polytech.arrosageplante.esp32.communication.websocket;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.polytech.arrosageplante.esp32.communication.websocket.exception.CommunicationError;
 import com.polytech.arrosageplante.esp32.communication.websocket.exception.FirstSynchronizationFailedException;
+import com.polytech.arrosageplante.esp32.communication.websocket.exception.NotEnoughWaterException;
 import com.polytech.arrosageplante.esp32.communication.websocket.input.WebSocketUnsynchronized;
-import com.polytech.arrosageplante.esp32.communication.websocket.input.command.InputCommand;
-import com.polytech.arrosageplante.esp32.communication.websocket.input.command.InputCommandFactory;
-import com.polytech.arrosageplante.esp32.communication.websocket.input.command.InputPlantDetailsCommand;
-import com.polytech.arrosageplante.esp32.communication.websocket.input.command.InputSyncCommand;
+import com.polytech.arrosageplante.esp32.communication.websocket.input.command.*;
 import com.polytech.arrosageplante.esp32.communication.websocket.input.handler.PlantDetailsReceiveService;
 import com.polytech.arrosageplante.esp32.communication.websocket.output.command.OutputCommandFillPlant;
 import com.polytech.arrosageplante.esp32.communication.websocket.output.command.OutputCommandPlantAssociation;
@@ -22,6 +20,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,6 +39,8 @@ public class CommandWebSocketHandler extends TextWebSocketHandler {
     private final InputCommandFactory inputCommandFactory;
     private final PlantDetailsReceiveService plantDetailsReceiveService;
     private final PlantRepository plantRepository;
+
+    private final HashMap<String, ArrosageStatus> arrosageStatus = new HashMap<>();
 
     @Autowired
     public CommandWebSocketHandler(ObjectMapper objectMapper,
@@ -75,6 +76,12 @@ public class CommandWebSocketHandler extends TextWebSocketHandler {
                     } else {
                         this.ackSync(session, plant.getId().toString());
                     }
+                }
+                case InputArrosageKo inputArrosageKo -> {
+                    this.arrosageStatus.replace(inputArrosageKo.getPlantId(), new ArrosageStatus(true, false));
+                }
+                case InputArrosageOk inputArrosageOk -> {
+                    this.arrosageStatus.replace(inputArrosageOk.getPlantId(), new ArrosageStatus(true, true));
                 }
             }
         } catch (Exception e) {
@@ -122,8 +129,16 @@ public class CommandWebSocketHandler extends TextWebSocketHandler {
         try {
             String jsonCommand = this.objectMapper.writeValueAsString(outputCommandFillPlant);
             this.sendMessage(new TextMessage(jsonCommand), plantId);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new CommunicationError("Erreur lors de l'envoi de la commande d'arrosage");
+        }
+
+        this.arrosageStatus.put(plantId, new ArrosageStatus(false, false));
+        while (this.arrosageStatus.get(plantId).hasReceivedResponse() == false) { }
+
+        if(this.arrosageStatus.remove(plantId).success() == false) {
+            throw new NotEnoughWaterException();
         }
     }
 

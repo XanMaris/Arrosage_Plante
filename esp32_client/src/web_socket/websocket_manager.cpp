@@ -63,8 +63,8 @@ void WebSocketManager::onMessageReceived(WStype_t type, uint8_t *payload, size_t
     }
 }
 
-WebSocketManager::WebSocketManager(AirSensor& airSensor, SoilMoistureSensor& soilMoistureSensor, Pump& pump) : webSocketClient(WebSocketsClient()), airSensor(airSensor), soilMoistureSensor(soilMoistureSensor), pump(pump)
-{
+WebSocketManager::WebSocketManager(AirSensor& airSensor, SoilMoistureSensor& soilMoistureSensor, WaterLevelSensor& waterLevelSensor, Pump& pump) : webSocketClient(WebSocketsClient()), airSensor(airSensor), soilMoistureSensor(soilMoistureSensor), waterLevelSensor(waterLevelSensor), pump(pump) {
+
 }
 
 void WebSocketManager::begin(const char *host, uint16_t port, const char *endpoint, String macAdress)
@@ -99,7 +99,23 @@ void WebSocketManager::loop()
 void WebSocketManager::handleArroser(float humidityTarget, float soilWaterRetentionFactor)
 {
     Serial.println("[Action] Handling 'ARROSER'");
-    this->pump.fill(this->soilMoistureSensor.humidity(), humidityTarget, soilWaterRetentionFactor);
+    if(this->pump.fill(this->soilMoistureSensor.humidity(), this->waterLevelSensor.waterLevel(), humidityTarget, soilWaterRetentionFactor) == false) {
+        StaticJsonDocument<256> jsonDoc;
+        jsonDoc["action"] = "ARROSAGE_NOT_ENOUGH_WATER";
+        jsonDoc["plantId"] = this->plantId;
+
+        String json;
+        serializeJson(jsonDoc, json);
+        this->webSocketClient.sendTXT(json);
+    } else {
+        StaticJsonDocument<256> jsonDoc;
+        jsonDoc["action"] = "ARROSAGE_OK";
+        jsonDoc["plantId"] = this->plantId;
+
+        String json;
+        serializeJson(jsonDoc, json);
+        this->webSocketClient.sendTXT(json);
+    }
 }
 
 void WebSocketManager::sendPeriodicSensorData()
@@ -121,6 +137,7 @@ void WebSocketManager::sendPeriodicSensorData()
     snprintf(airTemperatureStr, sizeof(airTemperatureStr), "%.2f", airTemperature);
     jsonDoc["airTemperature"] = airTemperatureStr;
     char soilHumidityStr[6];
+    snprintf(soilHumidityStr, sizeof(soilHumidityStr), "%.2f", soilHumidity);
     jsonDoc["soilHumidity"] = soilHumidityStr;
     jsonDoc["plantId"] = this->plantId;
 

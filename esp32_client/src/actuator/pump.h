@@ -18,6 +18,6 @@ private:
 public:
     Pump(uint8_t pin);
     void begin();
-    void fill(float humidityInitial, float humidityTarget, float soilWaterRetentionFactor);
+    bool fill(float humidityInitial, float currentWaterLevel, float humidityTarget, float soilWaterRetentionFactor);
 };
 #endif

@@ -1,5 +1,6 @@
 package com.polytech.arrosageplante.plant.controller;
 
+import com.polytech.arrosageplante.esp32.communication.websocket.exception.NotEnoughWaterException;
 import com.polytech.arrosageplante.esp32.communication.websocket.output.WebSocketPublisherService;
 import com.polytech.arrosageplante.plant.domain.Plant;
 import com.polytech.arrosageplante.plant.measure.domain.PlantMeasure;
@@ -78,10 +79,16 @@ public class PlantRestController {
 
 
     @PostMapping(value = "{id}/water")
-    public void waterPlant(@PathVariable String id) {
-        Plant plant = this.plantCrudService.getPlant(id);
-
-        this.webSocketPublisherService.arroser(plant);
+    public ResponseEntity<?> waterPlant(@PathVariable String id) {
+        try {
+            Plant plant = this.plantCrudService.getPlant(id);
+            this.webSocketPublisherService.arroser(plant);
+            return ResponseEntity.ok().build();
+        } catch (NotEnoughWaterException e) {
+            return ResponseEntity.status(400).body("Not enough water");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Internal server error");
+        }
     }
 
     @GetMapping(value = "{id}/measures/day")

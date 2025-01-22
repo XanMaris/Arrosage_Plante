@@ -31,7 +31,11 @@ export default function PlantDetail() {
             await arroserPlante(id, plante);
             setDisplayEdit(false);
         } catch (error) {
-            alert('Erreur lors de l\'arrosage de la plante');
+            if(error.response.status === 400) {
+                alert(error.response.data);
+            } else {
+                alert('Erreur lors de l\'arrosage de la plante');
+            }
         }
     };
 
